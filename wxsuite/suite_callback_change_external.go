@@ -1,4 +1,4 @@
-package wxthird
+package wxsuite
 
 type SuiteCallbackExternalUser struct {
 	UserID         string

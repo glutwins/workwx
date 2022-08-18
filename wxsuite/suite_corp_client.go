@@ -1,4 +1,4 @@
-package wxthird
+package wxsuite
 
 import (
 	"fmt"

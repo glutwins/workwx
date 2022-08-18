@@ -1,4 +1,4 @@
-package wxthird
+package wxsuite
 
 import (
 	"fmt"
@@ -18,6 +18,10 @@ type SuiteClient struct {
 	SuiteSecret string
 	TokenStore  store.TokenCache
 	WorkClient
+}
+
+func NewSuiteClient(suiteId string, suiteSecret string, tokenCache store.TokenCache) *SuiteClient {
+	return &SuiteClient{SuiteId: suiteId, SuiteSecret: suiteSecret, TokenStore: tokenCache}
 }
 
 func (sc *SuiteClient) GetSuiteToken() (string, error) {

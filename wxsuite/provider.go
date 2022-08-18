@@ -1,4 +1,4 @@
-package wxthird
+package wxsuite
 
 type ProviderConfig struct {
 	CorpId         string `json:"corpid"`
