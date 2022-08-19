@@ -143,6 +143,28 @@ func (sc *SuiteClient) GetPermanentCode(authCode string) (*GetPermanentCodeResp,
 	return resp, nil
 }
 
+type GetAuthInfoResp struct {
+	wxcommon.CommonResp
+	AuthCorpInfo CorpDetail `json:"auth_corp_info"` // 授权方企业信息
+	AuthInfo     AuthInfo   `json:"auth_info"`      // 授权信息。如果是通讯录应用，且没开启实体应用，是没有该项的。通讯录应用拥有企业通讯录的全部信息读写权限
+}
+
+func (sc *SuiteClient) GetAuthInfo(authCorpId, permanentCode string) (*GetAuthInfoResp, error) {
+	accessToken, err := sc.GetSuiteToken()
+	if err != nil {
+		return nil, err
+	}
+	resp := &GetAuthInfoResp{}
+	if err := sc.postJSON(fmt.Sprintf("/service/get_auth_info?suite_access_token=%s", accessToken), map[string]interface{}{
+		"auth_corpid":    authCorpId,
+		"permanent_code": permanentCode,
+	}, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string) *SuiteCorpClient {
 	return &SuiteCorpClient{
 		CorpId:      corpId,
