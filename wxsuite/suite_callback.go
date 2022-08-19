@@ -101,10 +101,9 @@ type SuiteCallbackAuth struct {
 }
 
 type SuiteCallbackShare struct {
-	AppId      int
-	CorpId     string
-	AgentId    int
-	ChangeType string
+	AppId   int
+	CorpId  string
+	AgentId int
 }
 
 type SuiteCallbackBase struct {
@@ -112,6 +111,7 @@ type SuiteCallbackBase struct {
 	InfoType   string
 	TimeStamp  int64
 	AuthCorpId string
+	ChangeType string
 }
 
 type SuiteCallbackData struct {
