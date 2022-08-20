@@ -137,13 +137,12 @@ func NewCallbackHandler(cfg *SuiteConfig, enc *encryptor.WorkwxEncryptor, h Suit
 
 		payload, err := enc.Decrypt([]byte(req.Encrypt))
 		if err != nil {
-			ctx.Status(http.StatusBadRequest)
+			ctx.String(http.StatusBadRequest, err.Error())
 			return
 		}
 
-		dec := xml.NewDecoder(bytes.NewBuffer(payload.Msg))
 		data := &SuiteCallbackData{}
-		if err = dec.Decode(data); err != nil {
+		if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(data); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
@@ -164,34 +163,34 @@ func NewCallbackHandler(cfg *SuiteConfig, enc *encryptor.WorkwxEncryptor, h Suit
 		case SuiteCallbackTypeShareChainChange:
 			h.OnCallbackShareChainChange(&req, &data.SuiteCallbackBase, &data.SuiteCallbackShare)
 		case SuiteCallbackTypeChangeContact:
-			if err := onChangeContact(dec, &req, data, h); err != nil {
+			if err := onChangeContact(xml.NewDecoder(bytes.NewBuffer(payload.Msg)), &req, data, h); err != nil {
 				ctx.Status(http.StatusBadRequest)
 				return
 			}
 		case SuiteCallbackTypeChangeExternalContact:
 			user := &SuiteCallbackExternalUser{}
-			if err := dec.Decode(user); err != nil {
+			if err := xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(user); err != nil {
 				ctx.Status(http.StatusBadRequest)
 				return
 			}
 			h.OnCallbackChangeExternalUser(&req, &data.SuiteCallbackBase, user)
 		case SuiteCallbackTypeChangeExternalChat:
 			chat := &SuiteCallbackExternalChat{}
-			if err := dec.Decode(chat); err != nil {
+			if err := xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(chat); err != nil {
 				ctx.Status(http.StatusBadRequest)
 				return
 			}
 			h.OnCallbackChangeExternalChat(&req, &data.SuiteCallbackBase, chat)
 		case SuiteCallbackTypeChangeExternalTag:
 			tag := &SuiteCallbackExternalTag{}
-			if err := dec.Decode(tag); err != nil {
+			if err := xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(tag); err != nil {
 				ctx.Status(http.StatusBadRequest)
 				return
 			}
 			h.OnCallbackChangeExternalTag(&req, &data.SuiteCallbackBase, tag)
 		default:
 			ev := &SuiteCallbackEvent{}
-			if err = dec.Decode(ev); err != nil {
+			if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(ev); err != nil {
 				ctx.Status(http.StatusBadRequest)
 				return
 			}

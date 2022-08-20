@@ -14,6 +14,10 @@ type TokenCache interface {
 	SetSuiteAccessToken(suiteId string, accessToken string, expiresIn int) error
 	GetSuiteCorpAccessToken(suiteId string, corpId string) (string, error)
 	SetSuiteCorpAccessToken(suiteId string, corpId string, accessToken string, expiresIn int) error
+	GetSuiteJsTicket(suiteId string, corpId string) (string, error)
+	SetSuiteJsTicket(suiteId string, corpId string, ticket string, expiresIn int) error
+	GetSuiteAgentJsTicket(suiteId string, corpId string) (string, error)
+	SetSuiteAgentJsTicket(suiteId string, corpId string, ticket string, expiresIn int) error
 }
 
 type RedisTokenStore struct {
@@ -31,6 +35,8 @@ func NewRedisTokenStore(prefix string, opt *redis.Options) TokenCache {
 const cacheKeySuiteTicket = "%s:%s:ticket"
 const cacheKeySuiteAccessToken = "%s:%s:access_token"
 const cacheKeyCorpAccessToken = "%s:%s:auth:access_token:%s"
+const cacheKeyJsTicket = "%s:%s:jsticket:%s"
+const cacheKeyAgentJsTicket = "%s:%s:agent:jsticket:%s"
 
 func (s *RedisTokenStore) SetSuiteTicket(suiteId string, ticket string) error {
 	r := s.redis.Set(s.redis.Context(), fmt.Sprintf(cacheKeySuiteTicket, s.prefix, suiteId), ticket, time.Duration(0))
@@ -76,4 +82,36 @@ func (s *RedisTokenStore) GetSuiteCorpAccessToken(suiteId string, corpId string)
 		return "", nil
 	}
 	return r.Val(), nil
+}
+
+func (s *RedisTokenStore) GetSuiteJsTicket(suiteId string, corpId string) (string, error) {
+	r := s.redis.Get(s.redis.Context(), fmt.Sprintf(cacheKeyJsTicket, s.prefix, suiteId, corpId))
+	err := r.Err()
+	if err == redis.Nil {
+		return "", nil
+	} else if err != nil {
+		return "", nil
+	}
+	return r.Val(), nil
+}
+
+func (s *RedisTokenStore) SetSuiteJsTicket(suiteId string, corpId string, ticket string, expiresIn int) error {
+	r := s.redis.Set(s.redis.Context(), fmt.Sprintf(cacheKeyJsTicket, s.prefix, suiteId, corpId), ticket, time.Second*time.Duration(expiresIn))
+	return r.Err()
+}
+
+func (s *RedisTokenStore) GetSuiteAgentJsTicket(suiteId string, corpId string) (string, error) {
+	r := s.redis.Get(s.redis.Context(), fmt.Sprintf(cacheKeyAgentJsTicket, s.prefix, suiteId, corpId))
+	err := r.Err()
+	if err == redis.Nil {
+		return "", nil
+	} else if err != nil {
+		return "", nil
+	}
+	return r.Val(), nil
+}
+
+func (s *RedisTokenStore) SetSuiteAgentJsTicket(suiteId string, corpId string, ticket string, expiresIn int) error {
+	r := s.redis.Set(s.redis.Context(), fmt.Sprintf(cacheKeyAgentJsTicket, s.prefix, suiteId, corpId), ticket, time.Second*time.Duration(expiresIn))
+	return r.Err()
 }

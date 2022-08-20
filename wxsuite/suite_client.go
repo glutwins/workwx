@@ -2,6 +2,7 @@ package wxsuite
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/glutwins/workwx/store"
 	"github.com/glutwins/workwx/wxcommon"
@@ -14,14 +15,16 @@ type GetSuiteTokenResp struct {
 }
 
 type SuiteClient struct {
-	SuiteId     string
+	wxcommon.SuiteClient
 	SuiteSecret string
-	TokenStore  store.TokenCache
-	WorkClient
 }
 
 func NewSuiteClient(suiteId string, suiteSecret string, tokenCache store.TokenCache) *SuiteClient {
-	return &SuiteClient{SuiteId: suiteId, SuiteSecret: suiteSecret, TokenStore: tokenCache}
+	sc := &SuiteClient{SuiteSecret: suiteSecret}
+	sc.SuiteId = suiteId
+	sc.TokenStore = tokenCache
+	sc.TokenHandler = sc.GetSuiteToken
+	return sc
 }
 
 func (sc *SuiteClient) GetSuiteToken() (string, error) {
@@ -36,7 +39,7 @@ func (sc *SuiteClient) GetSuiteToken() (string, error) {
 			return "", err
 		}
 		resp := &GetSuiteTokenResp{}
-		if err := sc.postJSON("/service/get_suite_token", map[string]interface{}{
+		if err := sc.PostJSON("/service/get_suite_token", map[string]interface{}{
 			"suite_id":     sc.SuiteId,
 			"suite_secret": sc.SuiteSecret,
 			"suite_ticket": ticket,
@@ -61,7 +64,7 @@ func (sc *SuiteClient) GetPreAuthCode() (*GetPreAuthCodeResp, error) {
 		return nil, err
 	}
 	resp := &GetPreAuthCodeResp{}
-	if err := sc.getJSON(fmt.Sprintf("/service/get_pre_auth_code?suite_access_token=%s", token), resp); err != nil {
+	if err := sc.GetJSON(fmt.Sprintf("/service/get_pre_auth_code?suite_access_token=%s", token), resp); err != nil {
 		return nil, err
 	}
 	return resp, err
@@ -134,7 +137,7 @@ func (sc *SuiteClient) GetPermanentCode(authCode string) (*GetPermanentCodeResp,
 		return nil, err
 	}
 	resp := &GetPermanentCodeResp{}
-	if err := sc.postJSON(fmt.Sprintf("/service/get_permanent_code?suite_access_token=%s", accessToken), map[string]interface{}{
+	if err := sc.PostJSON(fmt.Sprintf("/service/get_permanent_code?suite_access_token=%s", accessToken), map[string]interface{}{
 		"auth_code": authCode,
 	}, resp); err != nil {
 		return nil, err
@@ -155,7 +158,7 @@ func (sc *SuiteClient) GetAuthInfo(authCorpId, permanentCode string) (*GetAuthIn
 		return nil, err
 	}
 	resp := &GetAuthInfoResp{}
-	if err := sc.postJSON(fmt.Sprintf("/service/get_auth_info?suite_access_token=%s", accessToken), map[string]interface{}{
+	if err := sc.PostJSON(fmt.Sprintf("/service/get_auth_info?suite_access_token=%s", accessToken), map[string]interface{}{
 		"auth_corpid":    authCorpId,
 		"permanent_code": permanentCode,
 	}, resp); err != nil {
@@ -165,10 +168,61 @@ func (sc *SuiteClient) GetAuthInfo(authCorpId, permanentCode string) (*GetAuthIn
 	return resp, nil
 }
 
-func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string) *SuiteCorpClient {
-	return &SuiteCorpClient{
+type GetUserinfo3rdResp struct {
+	wxcommon.CommonResp
+	CorpId     string
+	UserId     string
+	DeviceId   string
+	UserTicket string `json:"user_ticket"`
+	ExpiresIn  int    `json:"expires_in"`
+	OpenUserID string `json:"open_userid"`
+}
+
+func (sc *SuiteClient) GetUserinfo3rd(code string) (*GetUserinfo3rdResp, error) {
+	accessToken, err := sc.GetSuiteToken()
+	if err != nil {
+		return nil, err
+	}
+	resp := &GetUserinfo3rdResp{}
+	var params = make(url.Values)
+	params.Set("suite_access_token", accessToken)
+	params.Set("code", code)
+	if err := sc.GetJSON("/service/getuserinfo3rd?"+params.Encode(), resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string, agentId int) *wxcommon.SuiteCorpClient {
+	scc := &wxcommon.SuiteCorpClient{
 		CorpId:      corpId,
 		CorpSecret:  corpSecret,
-		SuiteClient: *sc,
+		AgentId:     agentId,
+		SuiteClient: sc.SuiteClient,
 	}
+	scc.TokenHandler = func() (string, error) {
+		token, err := scc.TokenStore.GetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId)
+		if err != nil {
+			return "", err
+		}
+		if token == "" {
+			// TODO: lock and reget from cache
+			suiteToken, err := sc.GetSuiteToken()
+			if err != nil {
+				return "", err
+			}
+			resp := &wxcommon.GetCorpTokenResp{}
+			if err := scc.PostJSON(fmt.Sprintf("/service/get_corp_token?suite_access_token=%s", suiteToken), map[string]interface{}{
+				"auth_corpid":    scc.CorpId,
+				"permanent_code": scc.CorpSecret,
+			}, resp); err != nil {
+				return "", err
+			}
+			scc.TokenStore.SetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId, resp.AccessToken, resp.ExpiresIn)
+			return resp.AccessToken, nil
+		}
+		return token, nil
+	}
+	return scc
 }

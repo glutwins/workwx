@@ -21,3 +21,15 @@ func (r *CommonResp) Err() error {
 type WorkWxResp interface {
 	Err() error
 }
+
+type GetCorpTokenResp struct {
+	CommonResp
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int    `json:"expires_in"`
+}
+
+type TicketGetResp struct {
+	CommonResp
+	Ticket    string `json:"ticket"`
+	ExpiresIn int    `json:"expires_in"`
+}
