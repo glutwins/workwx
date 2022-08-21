@@ -16,7 +16,7 @@ type DepartmentListResp struct {
 	Department []*Department `json:"department"`
 }
 
-func (scc *SuiteCorpClient) DepartmentList(id int32) (*DepartmentListResp, error) {
+func (scc *SuiteCorpClient) DepartmentList(id int) (*DepartmentListResp, error) {
 	token, err := scc.TokenHandler()
 	if err != nil {
 		return nil, err

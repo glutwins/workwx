@@ -6,22 +6,6 @@ import (
 	"github.com/glutwins/workwx/wxcommon"
 )
 
-type SuiteCallbackExtAttrText struct {
-	Value string
-}
-
-type SuiteCallbackExtAttrWeb struct {
-	Title string
-	Url   string
-}
-
-type SuiteCallbackExtAttrItem struct {
-	Name string
-	Type int
-	Text []*SuiteCallbackExtAttrText
-	Web  []*SuiteCallbackExtAttrWeb
-}
-
 type SuiteCallbackUser struct {
 	UserID         string
 	OpenUserID     string
@@ -39,7 +23,7 @@ type SuiteCallbackUser struct {
 	Avatar         string
 	Alias          string
 	Telephone      string
-	ExtAttr        []*SuiteCallbackExtAttrItem
+	ExtAttr        []wxcommon.ExtAttr `xml:">Item,omitempty"`
 }
 
 type SuiteCallbackDepart struct {

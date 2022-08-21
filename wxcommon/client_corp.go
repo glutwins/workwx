@@ -1,7 +1,5 @@
 package wxcommon
 
-import "fmt"
-
 type SuiteCorpClient struct {
 	CorpId     string
 	CorpSecret string
@@ -15,12 +13,8 @@ func (scc *SuiteCorpClient) TicketGet() (string, error) {
 		return "", err
 	}
 	if ticket == "" {
-		accessToken, err := scc.TokenHandler()
-		if err != nil {
-			return "", err
-		}
 		resp := &TicketGetResp{}
-		if err := scc.GetJSON(fmt.Sprintf("/ticket/get?access_token=%s", accessToken), resp); err != nil {
+		if err := scc.GetRespWithToken("/ticket/get?access_token=%s", resp); err != nil {
 			return "", err
 		}
 
@@ -36,12 +30,8 @@ func (scc *SuiteCorpClient) TicketGetAgent() (string, error) {
 		return "", err
 	}
 	if ticket == "" {
-		accessToken, err := scc.TokenHandler()
-		if err != nil {
-			return "", err
-		}
 		resp := &TicketGetResp{}
-		if err := scc.GetJSON(fmt.Sprintf("/ticket/get?access_token=%s&type=agent_config", accessToken), resp); err != nil {
+		if err := scc.GetRespWithToken("/ticket/get?access_token=%s&type=agent_config", resp); err != nil {
 			return "", err
 		}
 		scc.TokenStore.SetSuiteAgentJsTicket(scc.SuiteId, scc.CorpId, resp.Ticket, resp.ExpiresIn)

@@ -18,7 +18,7 @@ func NewSuiteClient(suiteId string, tokenCache store.TokenCache) *SuiteClient {
 }
 
 func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string, agentId int) *wxcommon.SuiteCorpClient {
-	scc := &wxcommon.SuiteCorpClient{CorpId: corpId, CorpSecret: corpSecret, SuiteClient: wxcommon.SuiteClient(*sc)}
+	scc := &wxcommon.SuiteCorpClient{CorpId: corpId, CorpSecret: corpSecret, AgentId: agentId, SuiteClient: wxcommon.SuiteClient(*sc)}
 	scc.TokenHandler = func() (string, error) {
 		token, err := scc.TokenStore.GetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId)
 		if err != nil {

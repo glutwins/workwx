@@ -23,12 +23,12 @@ func main() {
 	sc := wxsuite.NewSuiteClient("suiteId", "suiteSecret", tokenCache)
 	fmt.Println(sc.GetSuiteToken())
 	r := gin.Default()
-	g := r.Group("/suite")
+	g := r.Group("/v1")
 	wxsuite.RegisterSuiteHandler(g, &wxsuite.SuiteConfig{
 		SuiteId:        "suiteId",
 		SuiteSecret:    "suiteSecret",
 		Token:          "token",
 		EncodingAESKey: "encodingAESKey",
 	}, &handler{tokenCache: tokenCache}, &wxsuite.DummySuiteMessageHandler{})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run()
 }

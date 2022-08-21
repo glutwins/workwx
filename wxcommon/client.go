@@ -32,6 +32,18 @@ func (wx *WorkClient) GetJSON(api string, resp WorkWxResp) error {
 	return resp.Err()
 }
 
+func (wx *WorkClient) GetRespWithToken(api string, resp WorkWxResp, args ...interface{}) error {
+	token, err := wx.TokenHandler()
+	if err != nil {
+		return err
+	}
+
+	var argsWithToken = []interface{}{token}
+	argsWithToken = append(argsWithToken, args...)
+
+	return wx.GetJSON(fmt.Sprintf(api, argsWithToken...), resp)
+}
+
 func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) error {
 	b, err := json.Marshal(req)
 	if err != nil {
@@ -52,4 +64,16 @@ func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) err
 	}
 
 	return resp.Err()
+}
+
+func (wx *WorkClient) PostRespWithToken(api string, req interface{}, resp WorkWxResp, args ...interface{}) error {
+	token, err := wx.TokenHandler()
+	if err != nil {
+		return err
+	}
+
+	var argsWithToken = []interface{}{token}
+	argsWithToken = append(argsWithToken, args...)
+
+	return wx.PostJSON(fmt.Sprintf(api, argsWithToken...), req, resp)
 }

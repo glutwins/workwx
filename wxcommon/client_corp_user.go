@@ -4,45 +4,13 @@ import (
 	"fmt"
 )
 
-type UserCreateReq struct {
-	UserSimple
-	Alias    string `json:"alias"`
-	Mobile   string `json:"mobile"`
-	Order    []int  `json:"order"`
-	Position string `json:"position"`
-	Gender   string `json:"gender"`
-	Email    string `json:"email"`
-}
-
-type UserSimple struct {
-	UserId     string `json:"userid"`
-	Name       string `json:"name"`
-	Department []int  `json:"department"`
-	OpenUserId string `json:"open_userid"`
-}
-
-type UserSimpleListResp struct {
-	CommonResp
-	UserList []*UserSimple `json:"userlist"`
-}
-
 func (scc *SuiteCorpClient) UserSimpleList(departmentId int) (*UserSimpleListResp, error) {
 	resp := &UserSimpleListResp{}
-	token, err := scc.TokenHandler()
-	if err != nil {
-		return nil, err
-	}
-	if err := scc.GetJSON(fmt.Sprintf("/user/simplelist?access_token=%s&department_id=%d", token, departmentId), resp); err != nil {
+	if err := scc.GetRespWithToken("/user/simplelist?access_token=%s&department_id=%d", resp, departmentId); err != nil {
 		return nil, err
 	}
 
-	return resp, err
-}
-
-type UserGetUserinfoResp struct {
-	CommonResp
-	UserId   string
-	DeviceId string
+	return resp, nil
 }
 
 func (scc *SuiteCorpClient) UserGetUserinfo(code string) (*UserGetUserinfoResp, error) {
@@ -58,30 +26,6 @@ func (scc *SuiteCorpClient) UserGetUserinfo(code string) (*UserGetUserinfoResp, 
 	return resp, nil
 }
 
-type UserGetResp struct {
-	CommonResp
-	UserId           string      `json:"userid"`
-	Name             string      `json:"name"`
-	Mobile           string      `json:"mobile"`
-	Department       []int32     `json:"department"`
-	Order            []int32     `json:"order"`
-	Position         string      `json:"position"`
-	Gender           string      `json:"gender"`
-	Email            string      `json:"email"`
-	BizMail          string      `json:"biz_mail"`
-	IsLeaderInDept   []int8      `json:"is_leader_in_dept"`
-	DirectLeader     []string    `json:"direct_leader"`
-	Avatar           string      `json:"avatar"`
-	ThumbAvatar      string      `json:"thumb_avatar"`
-	Telephone        string      `json:"telephone"`
-	Alias            string      `json:"alias"`
-	Address          string      `json:"address"`
-	OpenUserID       string      `json:"open_userid"`
-	MainDepartment   int         `json:"main_department"`
-	ExternalPosition string      `json:"external_position"`
-	ExternalProfile  interface{} `json:"external_profile"`
-}
-
 func (scc *SuiteCorpClient) UserGet(userid string) (*UserGetResp, error) {
 	token, err := scc.TokenHandler()
 	if err != nil {
@@ -92,5 +36,37 @@ func (scc *SuiteCorpClient) UserGet(userid string) (*UserGetResp, error) {
 		return nil, err
 	}
 
+	return resp, nil
+}
+
+func (scc *SuiteCorpClient) UserUpdate(req *UserUpdateReq) error {
+	resp := &CommonResp{}
+	if err := scc.PostRespWithToken("/user/update?access_token=%s", req, resp); err != nil {
+		return err
+	}
+	return resp.Err()
+}
+
+func (scc *SuiteCorpClient) UserDelete(userid string) error {
+	resp := &CommonResp{}
+	if err := scc.GetRespWithToken("/user/delete?access_token=%s&userid=%s", resp, userid); err != nil {
+		return err
+	}
+	return resp.Err()
+}
+
+func (scc *SuiteCorpClient) UserBatchDelete(userids []string) error {
+	resp := &CommonResp{}
+	if err := scc.PostRespWithToken("/user/delete?access_token=%s", map[string]interface{}{"useridlist": userids}, resp); err != nil {
+		return err
+	}
+	return resp.Err()
+}
+
+func (scc *SuiteCorpClient) UserList(departmentId int) (*UserListResp, error) {
+	resp := &UserListResp{}
+	if err := scc.GetRespWithToken("/user/list?access_token=%s&department_id=%d", resp, departmentId); err != nil {
+		return nil, err
+	}
 	return resp, nil
 }
