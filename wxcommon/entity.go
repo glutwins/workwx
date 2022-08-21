@@ -1,6 +1,8 @@
 package wxcommon
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type CommonResp struct {
 	ErrCode int    `json:"errcode"`

@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/glutwins/workwx/internal/lowlevel/encryptor"
 	"github.com/glutwins/workwx/internal/lowlevel/signature"
+	"github.com/glutwins/workwx/wxcommon"
 )
 
 type SuiteEvent struct {
@@ -22,14 +23,14 @@ type SuiteEvent struct {
 }
 
 type SuiteMessageHandler interface {
-	OnCallbackEvent(*XmlRxEnvelope, *SuiteEvent)
+	OnCallbackEvent(*wxcommon.XmlRxEnvelope, *SuiteEvent)
 }
 
 type DummySuiteMessageHandler struct {
 	Logger *log.Logger
 }
 
-func (h *DummySuiteMessageHandler) OnCallbackEvent(d *XmlRxEnvelope, ev *SuiteEvent) {
+func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteEvent) {
 	if h.Logger != nil {
 		h.Logger.Printf("%d To[%s][%d] From[%s]: msg=%s event=%s (%s)\n", ev.CreateTime, ev.ToUserName, ev.AgentID, ev.FromUserName, ev.MsgType, ev.Event, d.Encrypt)
 	}
@@ -37,7 +38,7 @@ func (h *DummySuiteMessageHandler) OnCallbackEvent(d *XmlRxEnvelope, ev *SuiteEv
 
 func NewMessageHandler(cfg *SuiteConfig, enc *encryptor.WorkwxEncryptor, h SuiteMessageHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req XmlRxEnvelope
+		var req wxcommon.XmlRxEnvelope
 		req.Query = ctx.Request.URL.Query()
 		if err := ctx.BindXML(&req); err != nil {
 			ctx.Status(http.StatusBadRequest)

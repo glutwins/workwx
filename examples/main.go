@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/glutwins/workwx/store"
+	"github.com/glutwins/workwx/wxcommon"
 	"github.com/glutwins/workwx/wxsuite"
 	"github.com/go-redis/redis/v8"
 )
@@ -14,7 +15,7 @@ type handler struct {
 	tokenCache store.TokenCache
 }
 
-func (h handler) OnCallbackSuiteTicket(raw *wxsuite.XmlRxEnvelope, base *wxsuite.SuiteCallbackBase, ticket string) {
+func (h handler) OnCallbackSuiteTicket(raw *wxcommon.XmlRxEnvelope, base *wxsuite.SuiteCallbackBase, ticket string) {
 	h.tokenCache.SetSuiteTicket(raw.ToUserName, ticket)
 }
 
