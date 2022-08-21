@@ -17,7 +17,7 @@ type DepartmentListResp struct {
 }
 
 func (scc *SuiteCorpClient) DepartmentList(id int) (*DepartmentListResp, error) {
-	token, err := scc.TokenHandler()
+	token, err := scc.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}

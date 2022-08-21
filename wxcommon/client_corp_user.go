@@ -14,7 +14,7 @@ func (scc *SuiteCorpClient) UserSimpleList(departmentId int) (*UserSimpleListRes
 }
 
 func (scc *SuiteCorpClient) UserGetUserinfo(code string) (*UserGetUserinfoResp, error) {
-	token, err := scc.TokenHandler()
+	token, err := scc.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (scc *SuiteCorpClient) UserGetUserinfo(code string) (*UserGetUserinfoResp, 
 }
 
 func (scc *SuiteCorpClient) UserGet(userid string) (*UserGetResp, error) {
-	token, err := scc.TokenHandler()
+	token, err := scc.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}

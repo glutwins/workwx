@@ -12,7 +12,7 @@ const wxBaseURL = "https://qyapi.weixin.qq.com/cgi-bin"
 type TokenHandler func() (string, error)
 
 type WorkClient struct {
-	TokenHandler TokenHandler
+	GetAccessToken TokenHandler
 }
 
 func (wx *WorkClient) GetJSON(api string, resp WorkWxResp) error {
@@ -33,7 +33,7 @@ func (wx *WorkClient) GetJSON(api string, resp WorkWxResp) error {
 }
 
 func (wx *WorkClient) GetRespWithToken(api string, resp WorkWxResp, args ...interface{}) error {
-	token, err := wx.TokenHandler()
+	token, err := wx.GetAccessToken()
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) err
 }
 
 func (wx *WorkClient) PostRespWithToken(api string, req interface{}, resp WorkWxResp, args ...interface{}) error {
-	token, err := wx.TokenHandler()
+	token, err := wx.GetAccessToken()
 	if err != nil {
 		return err
 	}

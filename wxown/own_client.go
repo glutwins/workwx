@@ -13,13 +13,13 @@ func NewSuiteClient(suiteId string, tokenCache store.TokenCache) *SuiteClient {
 	sc := &SuiteClient{}
 	sc.SuiteId = suiteId
 	sc.TokenStore = tokenCache
-	sc.TokenHandler = func() (string, error) { return "", nil }
+	sc.GetAccessToken = func() (string, error) { return "", nil }
 	return sc
 }
 
 func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string, agentId int) *wxcommon.SuiteCorpClient {
 	scc := &wxcommon.SuiteCorpClient{CorpId: corpId, CorpSecret: corpSecret, AgentId: agentId, SuiteClient: wxcommon.SuiteClient(*sc)}
-	scc.TokenHandler = func() (string, error) {
+	scc.GetAccessToken = func() (string, error) {
 		token, err := scc.TokenStore.GetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId)
 		if err != nil {
 			return "", err

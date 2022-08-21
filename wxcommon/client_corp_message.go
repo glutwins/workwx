@@ -70,7 +70,7 @@ type MessageSendResp struct {
 }
 
 func (scc *SuiteCorpClient) MessageSend(msg *Message) (*MessageSendResp, error) {
-	token, err := scc.TokenHandler()
+	token, err := scc.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}

@@ -23,7 +23,7 @@ func NewSuiteClient(suiteId string, suiteSecret string, tokenCache store.TokenCa
 	sc := &SuiteClient{SuiteSecret: suiteSecret}
 	sc.SuiteId = suiteId
 	sc.TokenStore = tokenCache
-	sc.TokenHandler = sc.GetSuiteToken
+	sc.GetAccessToken = sc.GetSuiteToken
 	return sc
 }
 
@@ -201,7 +201,7 @@ func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string, agentId i
 		AgentId:     agentId,
 		SuiteClient: sc.SuiteClient,
 	}
-	scc.TokenHandler = func() (string, error) {
+	scc.GetAccessToken = func() (string, error) {
 		token, err := scc.TokenStore.GetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId)
 		if err != nil {
 			return "", err
