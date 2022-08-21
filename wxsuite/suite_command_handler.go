@@ -2,9 +2,7 @@ package wxsuite
 
 import (
 	"bytes"
-	"crypto/rand"
 	"encoding/xml"
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -25,7 +23,6 @@ type SuiteCallbackHandler interface {
 	OnCallbackChangeContactUser(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackUser)
 	OnCallbackChangeContactDepart(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackDepart)
 	OnCallbackChangeContactTag(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackTag)
-	OnCallbackEvent(*XmlRxEnvelope, *SuiteCallbackEvent)
 	OnCallbackChangeExternalUser(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackExternalUser)
 	OnCallbackChangeExternalChat(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackExternalChat)
 	OnCallbackChangeExternalTag(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackExternalTag)
@@ -56,8 +53,6 @@ func (h *DummySuiteCallbackHandler) OnCallbackChangeContactDepart(*XmlRxEnvelope
 }
 func (h *DummySuiteCallbackHandler) OnCallbackChangeContactTag(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackTag) {
 }
-func (h *DummySuiteCallbackHandler) OnCallbackEvent(*XmlRxEnvelope, *SuiteCallbackEvent) {
-}
 func (h *DummySuiteCallbackHandler) OnCallbackChangeExternalUser(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackExternalUser) {
 }
 func (h *DummySuiteCallbackHandler) OnCallbackChangeExternalChat(*XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackExternalChat) {
@@ -84,15 +79,6 @@ type XmlRxEnvelope struct {
 	AgentID    string     `xml:"AgentID"`
 	Encrypt    string     `xml:"Encrypt"`
 	Query      url.Values `xml:"-"`
-}
-
-type SuiteCallbackEvent struct {
-	ToUserName   string
-	FromUserName string
-	CreateTime   int64
-	MsgType      string
-	Event        string
-	AgentID      int
 }
 
 type SuiteCallbackAuth struct {
@@ -189,55 +175,9 @@ func NewCallbackHandler(cfg *SuiteConfig, enc *encryptor.WorkwxEncryptor, h Suit
 			}
 			h.OnCallbackChangeExternalTag(&req, &data.SuiteCallbackBase, tag)
 		default:
-			ev := &SuiteCallbackEvent{}
-			if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(ev); err != nil {
-				ctx.Status(http.StatusBadRequest)
-				return
-			}
-			h.OnCallbackEvent(&req, ev)
+			h.OnCallbackChangeContactUnkown(&req, data)
 		}
 
 		ctx.String(http.StatusOK, "success")
 	}
-}
-
-func RegisterSuiteHandler(g *gin.RouterGroup, cfg *SuiteConfig, h SuiteCallbackHandler) error {
-	enc, err := encryptor.NewWorkwxEncryptor(cfg.EncodingAESKey)
-	if err != nil {
-		return err
-	}
-
-	encWithBody, err := encryptor.NewWorkwxEncryptor(
-		cfg.EncodingAESKey,
-		encryptor.WithEntropySource(rand.Reader),
-	)
-	if err != nil {
-		return err
-	}
-
-	// 回调校验测试
-	g.GET(fmt.Sprintf("/suite/%s/*action", cfg.SuiteId), func(ctx *gin.Context) {
-		if !signature.VerifyHTTPRequestSignature(cfg.Token, ctx.Request.URL, "") {
-			ctx.Status(http.StatusBadRequest)
-			return
-		}
-
-		payload, err := enc.Decrypt([]byte(ctx.Query("echostr")))
-		if err != nil {
-			ctx.Status(http.StatusBadRequest)
-			return
-		}
-		ctx.String(http.StatusOK, string(payload.Msg))
-	})
-
-	g.POST(fmt.Sprintf("/suite/%s/contact", cfg.SuiteId), NewCallbackHandler(cfg, encWithBody, h))
-	return nil
-}
-
-type SuiteManager interface {
-	GetSuite(string) *SuiteConfig
-}
-
-func BatchRegisterSuiteHandler(g *gin.RouterGroup, mgr SuiteManager) {
-
 }
