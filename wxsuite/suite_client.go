@@ -132,12 +132,8 @@ type GetPermanentCodeResp struct {
 }
 
 func (sc *SuiteClient) GetPermanentCode(authCode string) (*GetPermanentCodeResp, error) {
-	accessToken, err := sc.GetSuiteToken()
-	if err != nil {
-		return nil, err
-	}
 	resp := &GetPermanentCodeResp{}
-	if err := sc.PostJSON(fmt.Sprintf("/service/get_permanent_code?suite_access_token=%s", accessToken), map[string]interface{}{
+	if err := sc.PostRespWithToken("/service/get_permanent_code?suite_access_token=%s", map[string]interface{}{
 		"auth_code": authCode,
 	}, resp); err != nil {
 		return nil, err
@@ -153,12 +149,8 @@ type GetAuthInfoResp struct {
 }
 
 func (sc *SuiteClient) GetAuthInfo(authCorpId, permanentCode string) (*GetAuthInfoResp, error) {
-	accessToken, err := sc.GetSuiteToken()
-	if err != nil {
-		return nil, err
-	}
 	resp := &GetAuthInfoResp{}
-	if err := sc.PostJSON(fmt.Sprintf("/service/get_auth_info?suite_access_token=%s", accessToken), map[string]interface{}{
+	if err := sc.PostRespWithToken("/service/get_auth_info?suite_access_token=%s", map[string]interface{}{
 		"auth_corpid":    authCorpId,
 		"permanent_code": permanentCode,
 	}, resp); err != nil {
