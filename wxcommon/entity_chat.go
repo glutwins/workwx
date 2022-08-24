@@ -6,6 +6,7 @@ type GroupChatMemberInvitor struct {
 
 type GroupChatMember struct {
 	UserId        string                 `json:"userid"`
+	UnionId       string                 `json:"unionid"` // 仅限自建应用
 	Type          int                    `json:"type"`
 	JoinTime      int64                  `json:"join_time"`
 	JoinScene     int                    `json:"join_scene"`
