@@ -71,3 +71,16 @@ type Attachment struct {
 	Video       *Media       `json:"video,omitempty"`
 	File        *Media       `json:"file,omitempty"`
 }
+
+type WechatChannels struct {
+	NickName string `json:"nickname"` // 视频号
+	Source   int    `json:"source"`   // 视频号添加场景，0-未知 1-视频号主页 2-视频号直播间
+}
+
+type ExtAttr struct {
+	Name        string              `json:"name"`
+	Type        int                 `json:"type"`
+	Text        *ExtAttrText        `xml:",omitempty" json:"text,omitempty"`
+	Web         *ExtAttrWeb         `xml:",omitempty" json:"web,omitempty"`
+	Miniprogram *ExtAttrMiniprogram `xml:",omitempty" json:"miniprogram,omitempty"`
+}

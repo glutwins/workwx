@@ -15,26 +15,8 @@ type ExtAttrMiniprogram struct {
 	Title    string `json:"title"`
 }
 
-type ExtAttr struct {
-	Name        string              `json:"name"`
-	Type        int                 `json:"type"`
-	Text        *ExtAttrText        `xml:",omitempty" json:"text,omitempty"`
-	Web         *ExtAttrWeb         `xml:",omitempty" json:"web,omitempty"`
-	Miniprogram *ExtAttrMiniprogram `xml:",omitempty" json:"miniprogram,omitempty"`
-}
-
 type UserExtAttr struct {
 	Attrs []*ExtAttr `json:"attrs"`
-}
-
-type WechatChannels struct {
-	NickName string `json:"nickname"`
-}
-
-type ExternalProfile struct {
-	ExternalCorpName string         `json:"external_corp_name"`
-	WechatChannels   WechatChannels `json:"wechat_channels"`
-	ExternalAttr     []*ExtAttr     `json:"external_attr"`
 }
 
 type UserSimple struct {
@@ -44,25 +26,31 @@ type UserSimple struct {
 	OpenUserId string `json:"open_userid"`
 }
 
+type UserExternalProfile struct {
+	ExternalCorpName string         `json:"external_corp_name"`
+	WechatChannels   WechatChannels `json:"wechat_channels"`
+	ExternalAttr     []*ExtAttr     `json:"external_attr"`
+}
+
 type UserProfile struct {
-	AvatarMediaid    string          `json:"avatar_mediaid"` // 创建成员时
-	Avatar           string          `json:"avatar"`         // 获取成员时
-	ThumbAvatar      string          `json:"thumb_avatar"`   // 获取成员时
-	Alias            string          `json:"alias"`
-	Mobile           string          `json:"mobile"`
-	Order            []int           `json:"order"`
-	Position         string          `json:"position"`
-	Gender           string          `json:"gender"`
-	Email            string          `json:"email"`
-	BizMail          string          `json:"biz_mail"`
-	IsLeaderInDept   []int8          `json:"is_leader_in_dept"`
-	DirectLeader     []string        `json:"direct_leader"`
-	Telephone        string          `json:"telephone"`
-	Address          string          `json:"address"`
-	MainDepartment   int             `json:"main_department"`
-	ExtAttr          UserExtAttr     `json:"extattr"`
-	ExternalPosition string          `json:"external_position"`
-	ExternalProfile  ExternalProfile `json:"external_profile"`
+	AvatarMediaid    string              `json:"avatar_mediaid"` // 创建成员时
+	Avatar           string              `json:"avatar"`         // 获取成员时
+	ThumbAvatar      string              `json:"thumb_avatar"`   // 获取成员时
+	Alias            string              `json:"alias"`
+	Mobile           string              `json:"mobile"`
+	Order            []int               `json:"order"`
+	Position         string              `json:"position"`
+	Gender           string              `json:"gender"`
+	Email            string              `json:"email"`
+	BizMail          string              `json:"biz_mail"`
+	IsLeaderInDept   []int8              `json:"is_leader_in_dept"`
+	DirectLeader     []string            `json:"direct_leader"`
+	Telephone        string              `json:"telephone"`
+	Address          string              `json:"address"`
+	MainDepartment   int                 `json:"main_department"`
+	ExtAttr          UserExtAttr         `json:"extattr"`
+	ExternalPosition string              `json:"external_position"`
+	ExternalProfile  UserExternalProfile `json:"external_profile"`
 }
 
 type UserCreateReq struct {
