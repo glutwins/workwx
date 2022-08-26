@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 )
 
@@ -51,6 +53,35 @@ func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) err
 	}
 
 	r, err := http.Post(wxBaseURL+api, "application/json", bytes.NewBuffer(b))
+	if err != nil {
+		return err
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return fmt.Errorf("wxbizhttp:%d(%s)", r.StatusCode, r.Status)
+	}
+
+	if err = json.NewDecoder(r.Body).Decode(resp); err != nil {
+		return err
+	}
+
+	return resp.Err()
+}
+
+func (wx *WorkClient) PostMedia(api string, media *MediaToUpload, resp WorkWxResp) error {
+	buf := bytes.NewBuffer(nil)
+	mv := multipart.NewWriter(buf)
+	wr, err := mv.CreateFormFile("media", media.filename)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(wr, media.r)
+	if err != nil {
+		return err
+	}
+
+	r, err := http.Post(wxBaseURL+api, mv.FormDataContentType(), buf)
 	if err != nil {
 		return err
 	}
