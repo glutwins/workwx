@@ -23,11 +23,14 @@ type FollowUser struct {
 	Description    string           `json:"description"`
 	CreateTime     int64            `json:"createtime"`
 	Tags           []*FollowUserTag `json:"tags,omitempty"`
+	TagId          []string         `json:"tag_id"`
 	RemarkCorpName string           `json:"remark_corp_name"`
 	RemarkMobiles  []string         `json:"remark_mobiles,omitempty"` // 该成员对此客户备注的手机号码，代开发自建应用需要管理员授权才可以获取，第三方不可获取
 	OperUserId     string           `json:"oper_userid"`
 	AddWay         int              `json:"add_way"`
 	WechatChannels WechatChannels   `json:"wechat_channels"`
+	State          string           `json:"state"`
+	OperUserID     string           `json:"oper_userid"`
 }
 
 type ExternalContact struct {
@@ -45,12 +48,13 @@ type ExternalContact struct {
 
 type ExternalContactWithFollowUser struct {
 	ExternalContact ExternalContact `json:"external_contact"`
-	FollowUser      []*FollowUser   `json:"follow_user"`
+	FollowInfo      FollowUser      `json:"follow_info"`
 }
 
 type ExternalContactGetResp struct {
 	CommonResp
-	ExternalContactWithFollowUser
+	ExternalContact ExternalContact `json:"external_contact"`
+	FollowUser      []*FollowUser   `json:"follow_user"`
 }
 
 type ExternalContactListResp struct {
@@ -59,14 +63,15 @@ type ExternalContactListResp struct {
 }
 
 type ExternalContactBatchGetByUserReq struct {
-	UserIdList string `json:"userid_list"` // 上限100
-	Cursor     string `json:"cursor"`
-	Limit      int    `json:"limit"` // 上限100，默认50
+	UserIdList []string `json:"userid_list"` // 上限100
+	Cursor     string   `json:"cursor"`
+	Limit      int      `json:"limit"` // 上限100，默认50
 }
 
 type ExternalContactBatchGetByUserResp struct {
 	CommonResp
 	ExternalContactList []*ExternalContactWithFollowUser `json:"external_contact_list"`
+	NextCursor          string                           `json:"next_cursor"`
 }
 
 type ExternalContactRemarkReq struct {
