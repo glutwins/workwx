@@ -11,7 +11,7 @@ func (scc *SuiteCorpClient) ExternalContactSendWelcomeMsg(req *ExternalContactSe
 
 func (scc *SuiteCorpClient) ExternalContactGet(externalUserId string, cursor string) (*ExternalContactGetResp, error) {
 	resp := &ExternalContactGetResp{}
-	if err := scc.GetRespWithToken("/externalcontact/list?access_token=%s&userid=%s", resp, externalUserId, cursor); err != nil {
+	if err := scc.GetRespWithToken("/externalcontact/get?access_token=%s&external_userid=%s&cursor=%s", resp, externalUserId, cursor); err != nil {
 		return nil, err
 	}
 
@@ -20,7 +20,7 @@ func (scc *SuiteCorpClient) ExternalContactGet(externalUserId string, cursor str
 
 func (scc *SuiteCorpClient) ExternalContactList(userId string) (*ExternalContactListResp, error) {
 	resp := &ExternalContactListResp{}
-	if err := scc.GetRespWithToken("/externalcontact/list?access_token=%s&external_userid=%s&cursor=%s", resp, userId); err != nil {
+	if err := scc.GetRespWithToken("/externalcontact/list?access_token=%s&userid=%s", resp, userId); err != nil {
 		return nil, err
 	}
 
