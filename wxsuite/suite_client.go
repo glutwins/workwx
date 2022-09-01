@@ -129,6 +129,7 @@ type GetPermanentCodeResp struct {
 	DealerCorpInfo CorpSimple `json:"dealer_corp_info"` // 代理服务商企业信息。应用被代理后才有该信息
 	AuthCorpInfo   CorpDetail `json:"auth_corp_info"`   // 授权方企业信息
 	AuthInfo       AuthInfo   `json:"auth_info"`        // 授权信息。如果是通讯录应用，且没开启实体应用，是没有该项的。通讯录应用拥有企业通讯录的全部信息读写权限
+	State          string     `json:"state"`            // 安装应用时，扫码或者授权链接中带的state值
 }
 
 func (sc *SuiteClient) GetPermanentCode(authCode string) (*GetPermanentCodeResp, error) {
