@@ -2,7 +2,15 @@ package wxcommon
 
 import (
 	"fmt"
+	"io"
 )
+
+type SuiteCallbackConfig struct {
+	SuiteKey       string
+	Token          string
+	EncodingAESKey string
+	LoggerWriter   io.Writer
+}
 
 type CommonResp struct {
 	ErrCode int    `json:"errcode"`

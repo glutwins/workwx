@@ -17,7 +17,7 @@ type handler struct {
 }
 
 func (h handler) OnCallbackSuiteTicket(raw *wxcommon.XmlRxEnvelope, base *wxsuite.SuiteCallbackBase, ticket string) {
-	h.tokenCache.SetSuiteTicket(raw.ToUserName, ticket)
+	h.tokenCache.SetSuiteTicket(base.SuiteId, ticket)
 }
 
 func main() {
@@ -26,9 +26,8 @@ func main() {
 	fmt.Println(sc.GetSuiteToken())
 	r := gin.Default()
 	g := r.Group("/v1")
-	wxsuite.RegisterSuiteHandler(g, &wxsuite.SuiteConfig{
-		SuiteId:        "suiteId",
-		SuiteSecret:    "suiteSecret",
+	wxsuite.RegisterSuiteHandler(g, &wxcommon.SuiteCallbackConfig{
+		SuiteKey:       "suiteKey",
 		Token:          "token",
 		EncodingAESKey: "encodingAESKey",
 	}, &handler{tokenCache: tokenCache}, &wxsuite.DummySuiteMessageHandler{})
@@ -36,10 +35,8 @@ func main() {
 	osc := wxown.NewSuiteClient("scrm", tokenCache)
 	oscc := osc.NewCorpClient("corp_id", "corp_secret", 10000)
 	fmt.Println(oscc.GetAccessToken())
-	wxown.RegisterOwnHandler(g, &wxown.OwnConfig{
+	wxown.RegisterOwnHandler(g, &wxcommon.SuiteCallbackConfig{
 		SuiteKey:       "scrm",
-		AgentId:        10000,
-		AgentSecret:    "agent_secret",
 		Token:          "token",
 		EncodingAESKey: "encodingAESKey",
 	}, &wxown.DummyOwnCallbackHandler{})

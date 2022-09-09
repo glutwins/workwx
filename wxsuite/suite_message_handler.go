@@ -36,7 +36,7 @@ func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev
 	}
 }
 
-func NewMessageHandler(cfg *SuiteConfig, enc *encryptor.WorkwxEncryptor, h SuiteMessageHandler) gin.HandlerFunc {
+func NewMessageHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h SuiteMessageHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req wxcommon.XmlRxEnvelope
 		req.Query = ctx.Request.URL.Query()

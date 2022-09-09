@@ -8,7 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/glutwins/workwx/internal/lowlevel/encryptor"
 	"github.com/glutwins/workwx/internal/lowlevel/signature"
+	"github.com/glutwins/workwx/store"
 	"github.com/glutwins/workwx/wxcommon"
+	"github.com/rs/zerolog"
 )
 
 type SuiteCallbackHandler interface {
@@ -29,9 +31,11 @@ type SuiteCallbackHandler interface {
 }
 
 type DummySuiteCallbackHandler struct {
+	TokenCache store.TokenCache
 }
 
-func (h *DummySuiteCallbackHandler) OnCallbackSuiteTicket(*wxcommon.XmlRxEnvelope, *SuiteCallbackBase, string) {
+func (h *DummySuiteCallbackHandler) OnCallbackSuiteTicket(raw *wxcommon.XmlRxEnvelope, base *SuiteCallbackBase, ticket string) {
+	h.TokenCache.SetSuiteTicket(base.SuiteId, ticket)
 }
 func (h *DummySuiteCallbackHandler) OnCallbackCreateAuth(*wxcommon.XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackAuth) {
 }
@@ -96,14 +100,22 @@ type SuiteCallbackData struct {
 	SuiteCallbackAuth
 }
 
-func NewCallbackHandler(cfg *SuiteConfig, enc *encryptor.WorkwxEncryptor, h SuiteCallbackHandler) gin.HandlerFunc {
+func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h SuiteCallbackHandler) gin.HandlerFunc {
+	logger := zerolog.New(cfg.LoggerWriter).Level(zerolog.InfoLevel)
 	return func(ctx *gin.Context) {
+		ev := logger.Info().Str("token", cfg.Token).Str("aeskey", cfg.EncodingAESKey).Str("url", ctx.Request.URL.String())
+		defer func() {
+			ev.Msg("wxowncallback")
+		}()
 		var req wxcommon.XmlRxEnvelope
 		req.Query = ctx.Request.URL.Query()
-		if err := ctx.BindXML(&req); err != nil {
+		err := ctx.BindXML(&req)
+		ev = ev.Err(err)
+		if err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
+		ev = ev.Str("encrypt", req.Encrypt)
 
 		if !signature.VerifyHTTPRequestSignature(cfg.Token, ctx.Request.URL, req.Encrypt) {
 			ctx.Status(http.StatusBadRequest)
@@ -111,16 +123,20 @@ func NewCallbackHandler(cfg *SuiteConfig, enc *encryptor.WorkwxEncryptor, h Suit
 		}
 
 		payload, err := enc.Decrypt([]byte(req.Encrypt))
+		ev = ev.Err(err)
 		if err != nil {
 			ctx.String(http.StatusBadRequest, err.Error())
 			return
 		}
+		ev = ev.Str("decrypt", string(payload.Msg))
 
 		data := &SuiteCallbackData{}
 		if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(data); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
+
+		ev = ev.Str("infoType", data.InfoType)
 
 		switch data.InfoType {
 		case SuiteCallbackTypeSuiteTicket:

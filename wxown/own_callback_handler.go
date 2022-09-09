@@ -11,14 +11,12 @@ import (
 	"github.com/glutwins/workwx/internal/lowlevel/encryptor"
 	"github.com/glutwins/workwx/internal/lowlevel/signature"
 	"github.com/glutwins/workwx/wxcommon"
+	"github.com/rs/zerolog"
 )
 
 type OwnConfig struct {
-	SuiteKey       string
-	AgentId        int
-	AgentSecret    string
-	Token          string
-	EncodingAESKey string
+	AgentId     int
+	AgentSecret string
 }
 
 type OwnCallbackBase struct {
@@ -61,31 +59,44 @@ func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalChat(*wxcommon.XmlRxEn
 func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalTag(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackExternalTag) {
 }
 
-func NewCallbackHandler(cfg *OwnConfig, enc *encryptor.WorkwxEncryptor, h OwnCallbackHandler) gin.HandlerFunc {
+func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h OwnCallbackHandler) gin.HandlerFunc {
+	logger := zerolog.New(cfg.LoggerWriter).Level(zerolog.InfoLevel)
+
 	return func(ctx *gin.Context) {
+		ev := logger.Info().Str("token", cfg.Token).Str("aeskey", cfg.EncodingAESKey).Str("url", ctx.Request.URL.String())
+		defer func() {
+			ev.Msg("wxowncallback")
+		}()
 		var req wxcommon.XmlRxEnvelope
 		req.Query = ctx.Request.URL.Query()
-		if err := ctx.BindXML(&req); err != nil {
+		err := ctx.BindXML(&req)
+		ev = ev.Err(err)
+		if err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
 
+		ev = ev.Str("encrypt", req.Encrypt)
 		if !signature.VerifyHTTPRequestSignature(cfg.Token, ctx.Request.URL, req.Encrypt) {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
 
 		payload, err := enc.Decrypt([]byte(req.Encrypt))
+		ev = ev.Err(err)
 		if err != nil {
 			ctx.String(http.StatusBadRequest, err.Error())
 			return
 		}
+		ev = ev.Str("decrypt", string(payload.Msg))
 
 		data := &OwnCallbackBase{}
 		if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(data); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
+
+		ev = ev.Str("event", data.Event)
 
 		switch data.Event {
 		case wxcommon.CallbackTypeChangeContact:
@@ -129,7 +140,7 @@ func NewCallbackHandler(cfg *OwnConfig, enc *encryptor.WorkwxEncryptor, h OwnCal
 	}
 }
 
-func RegisterOwnHandler(g *gin.RouterGroup, cfg *OwnConfig, cmdHandler OwnCallbackHandler) error {
+func RegisterOwnHandler(g *gin.RouterGroup, cfg *wxcommon.SuiteCallbackConfig, cmdHandler OwnCallbackHandler) error {
 	enc, err := encryptor.NewWorkwxEncryptor(cfg.EncodingAESKey)
 	if err != nil {
 		return err

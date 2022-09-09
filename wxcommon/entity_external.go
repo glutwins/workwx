@@ -6,6 +6,82 @@ type ExternalContactSendWelcomeMsgReq struct {
 	Attachments []*Attachment `json:"attachments,omitempty"`
 }
 
+type ExternalContactAddMsgTemplateReq struct {
+	ChatType       string        `json:"chat_type"`
+	ExternalUserId []string      `json:"external_userid"`
+	Sender         string        `json:"sender"`
+	Text           *Text         `json:"text,omitempty"`
+	Attachments    []*Attachment `json:"attachments,omitempty"`
+}
+
+type ExternalContactAddMsgTemplateResp struct {
+	CommonResp
+	FailList []string `json:"fail_list"`
+	MsgId    string   `json:"msgid"`
+}
+
+type ExternalContactGetGroupMsgListV2Req struct {
+	ChatType   string `json:"chat_type"`
+	StartTime  int64  `json:"start_time"`
+	EndTime    int64  `json:"end_time"`
+	Creator    string `json:"creator"`
+	FilterType int    `json:"filter_type"`
+	Limit      int    `json:"limit"`
+	Cursor     string `json:"cursor"`
+}
+
+type ExternalContactGetGroupMsg struct {
+	MsgId       string        `json:"msgid"`
+	Creator     string        `json:"creator"`
+	CreateTime  string        `json:"create_time"`
+	CreateType  int           `json:"create_type"`
+	Text        *Text         `json:"text,omitempty"`
+	Attachments []*Attachment `json:"attachments,omitempty"`
+}
+
+type ExternalContactGetGroupMsgListV2Resp struct {
+	CommonResp
+	NextCursor   string                        `json:"next_cursor"`
+	GroupMsgList []*ExternalContactGetGroupMsg `json:"group_msg_list"`
+}
+
+type ExternalContactGetGroupMsgTaskReq struct {
+	MsgId  string `json:"msgid"`
+	Limit  int    `json:"limit"`
+	Cursor string `json:"cursor"`
+}
+
+type ExternalContactGetGroupMsgTaskItem struct {
+	UserId   string `json:"userid"`
+	Status   int    `json:"status"`
+	SendTime int    `json:"send_time"`
+}
+
+type ExternalContactGetGroupMsgTaskResp struct {
+	CommonResp
+	NextCursor string                                `json:"next_cursor"`
+	TaskList   []*ExternalContactGetGroupMsgTaskItem `json:"task_list"`
+}
+
+type ExternalContactGetGroupMsgSendResultReq struct {
+	ExternalContactGetGroupMsgTaskReq
+	UserId string `json:"userid"`
+}
+
+type ExternalContactGetGroupMsgSend struct {
+	ExternalUserId string `json:"external_userid"`
+	ChatId         string `json:"chat_id"`
+	UserId         string `json:"userid"`
+	Status         int    `json:"status"`
+	SendTime       int64  `json:"send_time"`
+}
+
+type ExternalContactGetGroupMsgSendResultResp struct {
+	CommonResp
+	NextCursor string                            `json:"next_cursor"`
+	SendList   []*ExternalContactGetGroupMsgSend `json:"send_list"`
+}
+
 type ExternalProfile struct {
 	ExternalAttr []*ExtAttr `json:"external_attr"`
 }
@@ -30,7 +106,6 @@ type FollowUser struct {
 	AddWay         int              `json:"add_way"`
 	WechatChannels WechatChannels   `json:"wechat_channels"`
 	State          string           `json:"state"`
-	OperUserID     string           `json:"oper_userid"`
 }
 
 type ExternalContact struct {

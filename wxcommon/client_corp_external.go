@@ -89,3 +89,11 @@ func (scc *SuiteCorpClient) ExternalContactMarkTag(req *ExternalContactMarkTagRe
 
 	return resp, nil
 }
+
+func (scc *SuiteCorpClient) ExternalContactAddMsgTemplate(req *ExternalContactAddMsgTemplateReq) (*ExternalContactAddMsgTemplateResp, error) {
+	resp := &ExternalContactAddMsgTemplateResp{}
+	if err := scc.PostRespWithToken("/externalcontact/add_msg_template?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
