@@ -1,10 +1,18 @@
 package wxcommon
 
+import "context"
+
 type SuiteCorpClient struct {
 	CorpId     string
 	CorpSecret string
 	AgentId    int
 	SuiteClient
+}
+
+func (scc *SuiteCorpClient) SuiteCorpClientWithContext(c context.Context) *SuiteCorpClient {
+	var nsc = *scc
+	nsc.Context = c
+	return &nsc
 }
 
 func (scc *SuiteCorpClient) TicketGet() (string, error) {

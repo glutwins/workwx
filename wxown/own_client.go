@@ -1,7 +1,6 @@
 package wxown
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/glutwins/workwx/store"
@@ -16,12 +15,6 @@ func NewSuiteClient(suiteId string, tokenCache store.TokenCache) *SuiteClient {
 	sc.TokenStore = tokenCache
 	sc.GetAccessToken = func() (string, error) { return "", nil }
 	return sc
-}
-
-func (sc *SuiteClient) WithContext(c context.Context) *SuiteClient {
-	nsc := *sc
-	nsc.Context = c
-	return &nsc
 }
 
 func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string, agentId int) *wxcommon.SuiteCorpClient {
