@@ -29,3 +29,30 @@ type ExternalContactGroupChatGetResp struct {
 	CommonResp
 	GroupChat
 }
+
+type OwnFilter struct {
+	UserIdList []string `json:"userid_list"`
+}
+
+type ExternalContactGroupChatListReq struct {
+	StatusFilter int       `json:"status_filter"`
+	OwnFilter    OwnFilter `json:"owner_filter"`
+	Limit        int       `json:"limit"`
+	Cursor       string    `json:"cursor"`
+}
+
+type GroupChatListItem struct {
+	ChatId string `json:"chat_id"`
+	Status int    `json:"status"`
+}
+
+type ExternalContactGroupChatListResp struct {
+	CommonResp
+	GroupChatList []*GroupChatListItem `json:"group_chat_list"`
+	NextCursor    string               `json:"next_cursor"`
+}
+
+type ExternalContactOpenGIdToChatIdResp struct {
+	CommonResp
+	ChatId string `json:"chat_id"`
+}
