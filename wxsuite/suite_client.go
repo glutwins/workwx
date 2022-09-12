@@ -1,6 +1,7 @@
 package wxsuite
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 
@@ -25,6 +26,12 @@ func NewSuiteClient(suiteId string, suiteSecret string, tokenCache store.TokenCa
 	sc.TokenStore = tokenCache
 	sc.GetAccessToken = sc.GetSuiteToken
 	return sc
+}
+
+func (sc *SuiteClient) WithContext(c context.Context) *SuiteClient {
+	nsc := *sc
+	nsc.Context = c
+	return &nsc
 }
 
 func (sc *SuiteClient) GetSuiteToken() (string, error) {

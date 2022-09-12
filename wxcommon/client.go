@@ -2,6 +2,7 @@ package wxcommon
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,16 +16,33 @@ type TokenHandler func() (string, error)
 
 type WorkClient struct {
 	GetAccessToken TokenHandler
+	Context        context.Context
+	Logger         ClientLogger
+}
+
+func (wx *WorkClient) context() context.Context {
+	if wx.Context != nil {
+		return wx.Context
+	}
+	return context.Background()
 }
 
 func (wx *WorkClient) GetJSON(api string, resp WorkWxResp) error {
-	r, err := http.Get(wxBaseURL + api)
+	var err error
+	defer func() {
+		if wx.Logger != nil {
+			wx.Logger.Println(wx.context(), wxBaseURL+api, nil, resp, err)
+		}
+	}()
+	var r *http.Response
+	r, err = http.Get(wxBaseURL + api)
 	if err != nil {
 		return err
 	}
 
 	if r.StatusCode != http.StatusOK {
-		return fmt.Errorf("wxbizhttp:%d(%s)", r.StatusCode, r.Status)
+		err = fmt.Errorf("wxbizhttp:%d(%s)", r.StatusCode, r.Status)
+		return err
 	}
 
 	if err = json.NewDecoder(r.Body).Decode(resp); err != nil {
@@ -47,18 +65,26 @@ func (wx *WorkClient) GetRespWithToken(api string, resp WorkWxResp, args ...inte
 }
 
 func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) error {
-	b, err := json.Marshal(req)
-	if err != nil {
+	var err error
+	defer func() {
+		if wx.Logger != nil {
+			wx.Logger.Println(wx.context(), wxBaseURL+api, nil, resp, err)
+		}
+	}()
+
+	var b []byte
+	if b, err = json.Marshal(req); err != nil {
 		return err
 	}
 
-	r, err := http.Post(wxBaseURL+api, "application/json", bytes.NewBuffer(b))
-	if err != nil {
+	var r *http.Response
+	if r, err = http.Post(wxBaseURL+api, "application/json", bytes.NewBuffer(b)); err != nil {
 		return err
 	}
 
 	if r.StatusCode != http.StatusOK {
-		return fmt.Errorf("wxbizhttp:%d(%s)", r.StatusCode, r.Status)
+		err = fmt.Errorf("wxbizhttp:%d(%s)", r.StatusCode, r.Status)
+		return err
 	}
 
 	if err = json.NewDecoder(r.Body).Decode(resp); err != nil {
