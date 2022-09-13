@@ -10,7 +10,7 @@ import (
 type MediaToUpload struct {
 	filename string
 	filesize int64
-	r        io.Reader
+	r        io.ReadCloser
 }
 
 func NewMediaFromFile(filename string) (*MediaToUpload, error) {
@@ -19,16 +19,11 @@ func NewMediaFromFile(filename string) (*MediaToUpload, error) {
 		return nil, err
 	}
 
-	stat, err := f.Stat()
-	if err != nil {
-		return nil, err
-	}
-
-	return &MediaToUpload{filename: path.Base(filename), filesize: stat.Size(), r: f}, nil
+	return &MediaToUpload{filename: path.Base(filename), r: f}, nil
 }
 
 func NewMediaFromBuffer(filename string, buf *bytes.Buffer) (*MediaToUpload, error) {
-	return &MediaToUpload{filename: path.Base(filename), filesize: int64(buf.Len()), r: buf}, nil
+	return &MediaToUpload{filename: path.Base(filename), r: io.NopCloser(buf)}, nil
 }
 
 type MediaUploadResp struct {

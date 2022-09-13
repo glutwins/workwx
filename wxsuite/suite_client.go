@@ -219,3 +219,28 @@ func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string, agentId i
 	}
 	return scc
 }
+
+func (sc *SuiteClient) NewOwnCorpClient(corpId string, corpSecret string, agentId int) *wxcommon.SuiteCorpClient {
+	scc := &wxcommon.SuiteCorpClient{
+		CorpId:      corpId,
+		CorpSecret:  corpSecret,
+		AgentId:     agentId,
+		SuiteClient: sc.SuiteClient,
+	}
+	scc.GetAccessToken = func() (string, error) {
+		token, err := scc.TokenStore.GetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId)
+		if err != nil {
+			return "", err
+		}
+		if token == "" {
+			resp := &wxcommon.GetCorpTokenResp{}
+			if err := scc.GetJSON(fmt.Sprintf("/service/gettoken?corpid=%s&corpsecret=%s", corpId, corpSecret), resp); err != nil {
+				return "", err
+			}
+			scc.TokenStore.SetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId, resp.AccessToken, resp.ExpiresIn)
+			return resp.AccessToken, nil
+		}
+		return token, nil
+	}
+	return scc
+}

@@ -95,6 +95,7 @@ func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) err
 }
 
 func (wx *WorkClient) PostMedia(api string, media *MediaToUpload, resp WorkWxResp) error {
+	defer media.r.Close()
 	buf := bytes.NewBuffer(nil)
 	mv := multipart.NewWriter(buf)
 	wr, err := mv.CreateFormFile("media", media.filename)
@@ -106,6 +107,8 @@ func (wx *WorkClient) PostMedia(api string, media *MediaToUpload, resp WorkWxRes
 	if err != nil {
 		return err
 	}
+
+	mv.Close()
 
 	r, err := http.Post(wxBaseURL+api, mv.FormDataContentType(), buf)
 	if err != nil {
