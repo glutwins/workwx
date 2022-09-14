@@ -68,7 +68,7 @@ func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) err
 	var err error
 	defer func() {
 		if wx.Logger != nil {
-			wx.Logger.Println(wx.context(), wxBaseURL+api, nil, resp, err)
+			wx.Logger.Println(wx.context(), wxBaseURL+api, req, resp, err)
 		}
 	}()
 

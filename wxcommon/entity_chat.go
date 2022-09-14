@@ -27,7 +27,7 @@ type GroupChat struct {
 
 type ExternalContactGroupChatGetResp struct {
 	CommonResp
-	GroupChat
+	GroupChat GroupChat `json:"group_chat"`
 }
 
 type OwnFilter struct {
