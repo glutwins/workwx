@@ -234,7 +234,7 @@ func (sc *SuiteClient) NewOwnCorpClient(corpId string, corpSecret string, agentI
 		}
 		if token == "" {
 			resp := &wxcommon.GetCorpTokenResp{}
-			if err := scc.GetJSON(fmt.Sprintf("/service/gettoken?corpid=%s&corpsecret=%s", corpId, corpSecret), resp); err != nil {
+			if err := scc.GetJSON(fmt.Sprintf("/gettoken?corpid=%s&corpsecret=%s", corpId, corpSecret), resp); err != nil {
 				return "", err
 			}
 			scc.TokenStore.SetSuiteCorpAccessToken(scc.SuiteId, scc.CorpId, resp.AccessToken, resp.ExpiresIn)
