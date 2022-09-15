@@ -30,7 +30,7 @@ type MediaUploadResp struct {
 	CommonResp
 	Type      string `json:"type"`
 	MediaId   string `json:"media_id"`
-	CreatedAt int64  `json:"created_at"`
+	CreatedAt string `json:"created_at"`
 }
 
 type MediaUploadImgResp struct {
