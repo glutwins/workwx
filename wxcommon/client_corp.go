@@ -22,7 +22,7 @@ func (scc *SuiteCorpClient) TicketGet() (string, error) {
 	}
 	if ticket == "" {
 		resp := &TicketGetResp{}
-		if err := scc.GetRespWithToken("/ticket/get?access_token=%s", resp); err != nil {
+		if err := scc.GetRespWithToken("/ticket/get_jsapi_ticket?access_token=%s", resp); err != nil {
 			return "", err
 		}
 

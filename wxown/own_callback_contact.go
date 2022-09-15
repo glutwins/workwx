@@ -6,7 +6,7 @@ import (
 	"github.com/glutwins/workwx/wxcommon"
 )
 
-func onChangeContact(dec *xml.Decoder, req *wxcommon.XmlRxEnvelope, data *OwnCallbackBase, h OwnCallbackHandler) error {
+func onChangeContact(dec *xml.Decoder, req *wxcommon.XmlRxEnvelope, data *wxcommon.CallbackBase, h OwnCallbackHandler) error {
 	switch data.ChangeType {
 	case wxcommon.ChangeContactCreateUser, wxcommon.ChangeContactDeleteUser, wxcommon.ChangeContactUpdateUser:
 		user := &wxcommon.XmlCallbackUser{}

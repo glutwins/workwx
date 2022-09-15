@@ -12,6 +12,15 @@ type SuiteCallbackConfig struct {
 	LoggerWriter   io.Writer
 }
 
+type CallbackBase struct {
+	ToUserName   string
+	FromUserName string
+	CreateTime   int64
+	MsgType      string
+	Event        string
+	ChangeType   string
+}
+
 type CommonResp struct {
 	ErrCode int    `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`

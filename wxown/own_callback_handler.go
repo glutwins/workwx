@@ -19,44 +19,35 @@ type OwnConfig struct {
 	AgentSecret string
 }
 
-type OwnCallbackBase struct {
-	ToUserName   string
-	FromUserName string
-	CreateTime   int64
-	MsgType      string
-	Event        string
-	ChangeType   string
-}
-
 type OwnCallbackHandler interface {
-	OnCallbackChangeBatchJobResult(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.BatchJob)
-	OnCallbackChangeContactUnkown(*wxcommon.XmlRxEnvelope, *OwnCallbackBase)
-	OnCallbackChangeContactUser(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackUser)
-	OnCallbackChangeContactDepart(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackDepart)
-	OnCallbackChangeContactTag(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackTag)
-	OnCallbackChangeExternalUser(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackExternalUser)
-	OnCallbackChangeExternalChat(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackExternalChat)
-	OnCallbackChangeExternalTag(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackExternalTag)
+	OnCallbackChangeBatchJobResult(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.BatchJob)
+	OnCallbackChangeContactUnkown(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase)
+	OnCallbackChangeContactUser(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackUser)
+	OnCallbackChangeContactDepart(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackDepart)
+	OnCallbackChangeContactTag(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackTag)
+	OnCallbackChangeExternalUser(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackExternalUser)
+	OnCallbackChangeExternalChat(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackExternalChat)
+	OnCallbackChangeExternalTag(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackExternalTag)
 }
 
 type DummyOwnCallbackHandler struct {
 }
 
-func (h *DummyOwnCallbackHandler) OnCallbackChangeBatchJobResult(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.BatchJob) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeBatchJobResult(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.BatchJob) {
 }
-func (h *DummyOwnCallbackHandler) OnCallbackChangeContactUnkown(*wxcommon.XmlRxEnvelope, *OwnCallbackBase) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeContactUnkown(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase) {
 }
-func (h *DummyOwnCallbackHandler) OnCallbackChangeContactUser(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackUser) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeContactUser(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackUser) {
 }
-func (h *DummyOwnCallbackHandler) OnCallbackChangeContactDepart(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackDepart) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeContactDepart(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackDepart) {
 }
-func (h *DummyOwnCallbackHandler) OnCallbackChangeContactTag(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackTag) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeContactTag(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackTag) {
 }
-func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalUser(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackExternalUser) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalUser(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackExternalUser) {
 }
-func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalChat(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackExternalChat) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalChat(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackExternalChat) {
 }
-func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalTag(*wxcommon.XmlRxEnvelope, *OwnCallbackBase, *wxcommon.XmlCallbackExternalTag) {
+func (h *DummyOwnCallbackHandler) OnCallbackChangeExternalTag(*wxcommon.XmlRxEnvelope, *wxcommon.CallbackBase, *wxcommon.XmlCallbackExternalTag) {
 }
 
 func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h OwnCallbackHandler) gin.HandlerFunc {
@@ -90,7 +81,7 @@ func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.Workwx
 		}
 		ev = ev.Str("decrypt", string(payload.Msg))
 
-		data := &OwnCallbackBase{}
+		data := &wxcommon.CallbackBase{}
 		if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(data); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return

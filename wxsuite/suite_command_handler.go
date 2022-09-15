@@ -94,7 +94,11 @@ type SuiteCallbackBase struct {
 }
 
 type SuiteCallbackData struct {
-	SuiteCallbackBase
+	wxcommon.CallbackBase
+	SuiteId     string
+	InfoType    string
+	TimeStamp   int64
+	AuthCorpId  string
 	SuiteTicket string
 	SuiteCallbackShare
 	SuiteCallbackAuth
@@ -136,23 +140,39 @@ func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.Workwx
 			return
 		}
 
+		base := &SuiteCallbackBase{}
+		base.SuiteId = data.SuiteId
+		base.InfoType = data.InfoType
+		base.TimeStamp = data.TimeStamp
+		base.AuthCorpId = data.AuthCorpId
+		base.ChangeType = data.ChangeType
+
+		if data.InfoType == "" && data.Event != "" {
+			base.InfoType = data.Event
+			base.AuthCorpId = data.ToUserName
+			base.TimeStamp = data.CreateTime
+			data.InfoType = data.Event
+			data.AuthCorpId = data.ToUserName
+			data.TimeStamp = data.CreateTime
+		}
+
 		ev = ev.Str("infoType", data.InfoType)
 
-		switch data.InfoType {
+		switch base.InfoType {
 		case SuiteCallbackTypeSuiteTicket:
-			h.OnCallbackSuiteTicket(&req, &data.SuiteCallbackBase, data.SuiteTicket)
+			h.OnCallbackSuiteTicket(&req, base, data.SuiteTicket)
 		case SuiteCallbackTypeCreateAuth:
-			h.OnCallbackCreateAuth(&req, &data.SuiteCallbackBase, &data.SuiteCallbackAuth)
+			h.OnCallbackCreateAuth(&req, base, &data.SuiteCallbackAuth)
 		case SuiteCallbackTypeChangeAuth:
-			h.OnCallbackChangeAuth(&req, &data.SuiteCallbackBase, &data.SuiteCallbackAuth)
+			h.OnCallbackChangeAuth(&req, base, &data.SuiteCallbackAuth)
 		case SuiteCallbackTypeCancelAuth:
-			h.OnCallbackCancelAuth(&req, &data.SuiteCallbackBase, &data.SuiteCallbackAuth)
+			h.OnCallbackCancelAuth(&req, base, &data.SuiteCallbackAuth)
 		case SuiteCallbackTypeResetPermanentCode:
-			h.OnCallbackResetPermanentCode(&req, &data.SuiteCallbackBase, &data.SuiteCallbackAuth)
+			h.OnCallbackResetPermanentCode(&req, base, &data.SuiteCallbackAuth)
 		case SuiteCallbackTypeShareAgentChange:
-			h.OnCallbackShareAgentChange(&req, &data.SuiteCallbackBase, &data.SuiteCallbackShare)
+			h.OnCallbackShareAgentChange(&req, base, &data.SuiteCallbackShare)
 		case SuiteCallbackTypeShareChainChange:
-			h.OnCallbackShareChainChange(&req, &data.SuiteCallbackBase, &data.SuiteCallbackShare)
+			h.OnCallbackShareChainChange(&req, base, &data.SuiteCallbackShare)
 		case wxcommon.CallbackTypeChangeContact:
 			if err := onChangeContact(xml.NewDecoder(bytes.NewBuffer(payload.Msg)), &req, data, h); err != nil {
 				ctx.Status(http.StatusBadRequest)
@@ -164,21 +184,21 @@ func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.Workwx
 				ctx.Status(http.StatusBadRequest)
 				return
 			}
-			h.OnCallbackChangeExternalUser(&req, &data.SuiteCallbackBase, user)
+			h.OnCallbackChangeExternalUser(&req, base, user)
 		case wxcommon.CallbackTypeChangeExternalChat:
 			chat := &wxcommon.XmlCallbackExternalChat{}
 			if err := xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(chat); err != nil {
 				ctx.Status(http.StatusBadRequest)
 				return
 			}
-			h.OnCallbackChangeExternalChat(&req, &data.SuiteCallbackBase, chat)
+			h.OnCallbackChangeExternalChat(&req, base, chat)
 		case wxcommon.CallbackTypeChangeExternalTag:
 			tag := &wxcommon.XmlCallbackExternalTag{}
 			if err := xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(tag); err != nil {
 				ctx.Status(http.StatusBadRequest)
 				return
 			}
-			h.OnCallbackChangeExternalTag(&req, &data.SuiteCallbackBase, tag)
+			h.OnCallbackChangeExternalTag(&req, base, tag)
 		default:
 			h.OnCallbackChangeContactUnkown(&req, data)
 		}
