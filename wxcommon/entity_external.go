@@ -165,7 +165,7 @@ type ExternalContactGetCorpTagListReq struct {
 }
 
 type Tag struct {
-	Id         string `json:"tag"`
+	Id         string `json:"id"`
 	Name       string `json:"name"`
 	CreateTime int64  `json:"create_time"`
 	Order      int    `json:"order"`
