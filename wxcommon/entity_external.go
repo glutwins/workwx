@@ -187,10 +187,10 @@ type ExternalContactGetCorpTagListResp struct {
 }
 
 type ExternalContactAddCorpTagReq struct {
-	GroupId   string                          `json:"group_id"`
-	GroupName string                          `json:"group_name"`
-	Order     int                             `json:"order"`
-	Tag       []ExternalContactEditCorpTagReq `json:"tag"`
+	GroupId   string                          `json:"group_id,omitempty"`
+	GroupName string                          `json:"group_name,omitempty"`
+	Order     int                             `json:"order,omitempty"`
+	Tag       []ExternalContactEditCorpTagReq `json:"tag,omitempty"`
 }
 
 type ExternalContactAddCorpTagResp struct {
@@ -199,14 +199,14 @@ type ExternalContactAddCorpTagResp struct {
 }
 
 type ExternalContactEditCorpTagReq struct {
-	Id    string `json:"tag"`
-	Name  string `json:"name"`
-	Order int    `json:"order"`
+	Id    string `json:"tag,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Order int    `json:"order,omitempty"`
 }
 
 type ExternalContactMarkTagReq struct {
 	UserId         string   `json:"userid"`
 	ExternalUserId string   `json:"external_userid"`
 	AddTag         []string `json:"add_tag,omitempty"`
-	RemoveTag      []string `json:"remove_tag"`
+	RemoveTag      []string `json:"remove_tag,omitempty"`
 }
