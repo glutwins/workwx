@@ -109,8 +109,5 @@ type AuthGetUserinfoResp struct {
 
 type AuthGetUserDetailResp struct {
 	CommonResp
-	UserId         string `json:"userid"`
-	UserTicket     string `json:"user_ticket"`
-	OpenId         string `json:"openid"`
-	ExternalUserId string `json:"external_userid"`
+	UserPrivate
 }
