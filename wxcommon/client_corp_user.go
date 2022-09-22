@@ -70,3 +70,21 @@ func (scc *SuiteCorpClient) UserList(departmentId int) (*UserListResp, error) {
 	}
 	return resp, nil
 }
+
+func (scc *SuiteCorpClient) AuthGetUserinfo(code string) (*AuthGetUserinfoResp, error) {
+	resp := &AuthGetUserinfoResp{}
+	if err := scc.GetRespWithToken("/auth/getuserinfo?access_token=%s&code=%s", resp, code); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (scc *SuiteCorpClient) AuthGetUserDetail(userTicket string) (*AuthGetUserDetailResp, error) {
+	resp := &AuthGetUserDetailResp{}
+	if err := scc.PostRespWithToken("/auth/getuserdetail?access_token=%s", map[string]interface{}{"user_ticket": userTicket}, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}

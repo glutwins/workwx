@@ -32,21 +32,26 @@ type UserExternalProfile struct {
 	ExternalAttr     []*ExtAttr     `json:"external_attr"`
 }
 
+type UserPrivate struct {
+	Gender  string `json:"gender"`
+	Avatar  string `json:"avatar"` // 获取成员时
+	QrCode  string `json:"qr_code"`
+	Mobile  string `json:"mobile"`
+	Email   string `json:"email"`
+	BizMail string `json:"biz_mail"`
+	Address string `json:"address"`
+}
+
 type UserProfile struct {
+	UserPrivate
 	AvatarMediaid    string              `json:"avatar_mediaid"` // 创建成员时
-	Avatar           string              `json:"avatar"`         // 获取成员时
 	ThumbAvatar      string              `json:"thumb_avatar"`   // 获取成员时
 	Alias            string              `json:"alias"`
-	Mobile           string              `json:"mobile"`
 	Order            []int               `json:"order"`
 	Position         string              `json:"position"`
-	Gender           string              `json:"gender"`
-	Email            string              `json:"email"`
-	BizMail          string              `json:"biz_mail"`
 	IsLeaderInDept   []int8              `json:"is_leader_in_dept"`
 	DirectLeader     []string            `json:"direct_leader"`
 	Telephone        string              `json:"telephone"`
-	Address          string              `json:"address"`
 	MainDepartment   int                 `json:"main_department"`
 	ExtAttr          UserExtAttr         `json:"extattr"`
 	ExternalPosition string              `json:"external_position"`
@@ -74,8 +79,7 @@ type UserGetUserinfoResp struct {
 type UserDetail struct {
 	UserSimple
 	UserProfile
-	Status int    `json:"status"` // 激活状态: 1=已激活，2=已禁用，4=未激活，5=退出企业
-	QrCode string `json:"qr_code"`
+	Status int `json:"status"` // 激活状态: 1=已激活，2=已禁用，4=未激活，5=退出企业
 }
 
 type UserGetResp struct {
@@ -93,4 +97,20 @@ type UserUpdateReq struct {
 type UserListResp struct {
 	CommonResp
 	UserList []*UserDetail `json:"userlist"`
+}
+
+type AuthGetUserinfoResp struct {
+	CommonResp
+	UserId         string `json:"userid"`
+	UserTicket     string `json:"user_ticket"`
+	OpenId         string `json:"openid"`
+	ExternalUserId string `json:"external_userid"`
+}
+
+type AuthGetUserDetailResp struct {
+	CommonResp
+	UserId         string `json:"userid"`
+	UserTicket     string `json:"user_ticket"`
+	OpenId         string `json:"openid"`
+	ExternalUserId string `json:"external_userid"`
 }
