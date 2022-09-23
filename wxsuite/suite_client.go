@@ -187,6 +187,23 @@ func (sc *SuiteClient) GetUserinfo3rd(code string) (*GetUserinfo3rdResp, error) 
 	return resp, nil
 }
 
+func (sc *SuiteClient) MiniprogramJsCode2Session(code string) (*wxcommon.MiniprogramJsCode2SessionResp, error) {
+	accessToken, err := sc.GetSuiteToken()
+	if err != nil {
+		return nil, err
+	}
+	resp := &wxcommon.MiniprogramJsCode2SessionResp{}
+	var params = make(url.Values)
+	params.Set("suite_access_token", accessToken)
+	params.Set("js_code", code)
+	params.Set("grant_type", "authorization_code")
+	if err := sc.GetJSON("/service/miniprogram/jscode2session?"+params.Encode(), resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (sc *SuiteClient) NewCorpClient(corpId string, corpSecret string, agentId int) *wxcommon.SuiteCorpClient {
 	scc := &wxcommon.SuiteCorpClient{
 		CorpId:      corpId,

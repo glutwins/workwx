@@ -101,3 +101,11 @@ type ExtAttr struct {
 	Web         *ExtAttrWeb         `xml:",omitempty" json:"web,omitempty"`
 	Miniprogram *ExtAttrMiniprogram `xml:",omitempty" json:"miniprogram,omitempty"`
 }
+
+type MiniprogramJsCode2SessionResp struct {
+	CommonResp
+	CorpId     string `json:"corpid"`
+	UserId     string `json:"userid"`
+	SessionKey string `json:"session_key"`
+	OpenUserID string `json:"open_userid"`
+}

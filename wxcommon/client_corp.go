@@ -1,6 +1,9 @@
 package wxcommon
 
-import "context"
+import (
+	"context"
+	"net/url"
+)
 
 type SuiteCorpClient struct {
 	CorpId     string
@@ -46,4 +49,21 @@ func (scc *SuiteCorpClient) TicketGetAgent() (string, error) {
 		return resp.Ticket, nil
 	}
 	return ticket, nil
+}
+
+func (scc *SuiteCorpClient) MiniprogramJsCode2Session(code string) (*MiniprogramJsCode2SessionResp, error) {
+	accessToken, err := scc.GetAccessToken()
+	if err != nil {
+		return nil, err
+	}
+	resp := &MiniprogramJsCode2SessionResp{}
+	var params = make(url.Values)
+	params.Set("access_token", accessToken)
+	params.Set("js_code", code)
+	params.Set("grant_type", "authorization_code")
+	if err := scc.GetJSON("/miniprogram/jscode2session?"+params.Encode(), resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
