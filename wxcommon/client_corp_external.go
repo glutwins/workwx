@@ -97,3 +97,19 @@ func (scc *SuiteCorpClient) ExternalContactAddMsgTemplate(req *ExternalContactAd
 	}
 	return resp, nil
 }
+
+func (scc *SuiteCorpClient) UnionidToExternalUserid(req *UnionidToExternalUseridReq) (*UnionidToExternalUseridResp, error) {
+	resp := &UnionidToExternalUseridResp{}
+	if err := scc.PostRespWithToken("/idconvert/unionid_to_external_userid?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (scc *SuiteCorpClient) ExternalUserIdToPendingId(req *ExternalUserIdToPendingIdReq) (*ExternalUserIdToPendingIdResp, error) {
+	resp := &ExternalUserIdToPendingIdResp{}
+	if err := scc.PostRespWithToken("/idconvert/batch/external_userid_to_pending_id?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

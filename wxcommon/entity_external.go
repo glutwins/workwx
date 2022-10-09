@@ -210,3 +210,29 @@ type ExternalContactMarkTagReq struct {
 	AddTag         []string `json:"add_tag,omitempty"`
 	RemoveTag      []string `json:"remove_tag,omitempty"`
 }
+
+type UnionidToExternalUseridReq struct {
+	UnionId     string `json:"unionid"`
+	OpenId      string `json:"openid"`
+	SubjectType int    `json:"subject_type"`
+}
+
+type ExternalPendingId struct {
+	ExternalUserid string `json:"external_userid"`
+	PendingId      string `json:"pending_id"`
+}
+
+type UnionidToExternalUseridResp struct {
+	CommonResp
+	ExternalPendingId
+}
+
+type ExternalUserIdToPendingIdReq struct {
+	ChatId         string   `json:"chat_id,omitempty"`
+	ExternalUserId []string `json:"external_userid"`
+}
+
+type ExternalUserIdToPendingIdResp struct {
+	CommonResp
+	Result []ExternalPendingId `json:"result"`
+}
