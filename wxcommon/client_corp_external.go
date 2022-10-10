@@ -113,3 +113,15 @@ func (scc *SuiteCorpClient) ExternalUserIdToPendingId(req *ExternalUserIdToPendi
 	}
 	return resp, nil
 }
+
+//userid和partyid不可同时为空;
+//此接口提供的数据以天为维度，查询的时间范围为[start_time,end_time]，即前后均为闭区间，支持的最大查询跨度为30天；
+//用户最多可获取最近180天内的数据；
+//如传入多个userid，则表示获取这些成员总体的联系客户数据
+func (scc *SuiteCorpClient) ExternalContactGetBehaviorData(req *ExternalContactGetBehaviorDataReq) (*ExternalContactGetBehaviorDataResp, error) {
+	resp := &ExternalContactGetBehaviorDataResp{}
+	if err := scc.PostRespWithToken("/externalcontact/get_user_behavior_data?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
