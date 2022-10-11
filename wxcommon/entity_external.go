@@ -236,3 +236,26 @@ type ExternalUserIdToPendingIdResp struct {
 	CommonResp
 	Result []ExternalPendingId `json:"result"`
 }
+
+type ExternalContactGetBehaviorDataReq struct {
+	UserID    []string `json:"userid,omitempty"`
+	PartyID   []int64  `json:"partyid,omitempty"`
+	StartTime int64    `json:"start_time"`
+	EndTime   int64    `json:"end_time"`
+}
+
+type ExternalContactGetBehaviorDataResp struct {
+	CommonResp
+	BehaviorData []BehaviorData `json:"behavior_data"`
+}
+
+type BehaviorData struct {
+	StartTime           int64   `json:"start_time"`
+	ChatCnt             int64   `json:"chat_cnt"`
+	MessageCnt          int64   `json:"message_cnt"`
+	ReplyPercentage     float64 `json:"reply_percentage"`
+	AvgReplyTime        int64   `json:"avg_reply_time"`
+	NegativeFeedbackCnt int64   `json:"negative_feedback_cnt"`
+	NewApplyCnt         int64   `json:"new_apply_cnt"`
+	NewContactCnt       int64   `json:"new_contact_cnt"`
+}
