@@ -250,7 +250,7 @@ type ExternalContactGetBehaviorDataResp struct {
 }
 
 type BehaviorData struct {
-	StartTime           int64   `json:"start_time"`
+	StatTime            int64   `json:"stat_time"`
 	ChatCnt             int64   `json:"chat_cnt"`
 	MessageCnt          int64   `json:"message_cnt"`
 	ReplyPercentage     float64 `json:"reply_percentage"`
