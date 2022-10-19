@@ -73,7 +73,7 @@ type Miniprogram struct {
 	Title      string `json:"title"`
 	PicMediaId string `json:"pic_media_id"`
 	AppId      string `json:"appid"`
-	Page       string `json:"vedio"`
+	Page       string `json:"page"`
 }
 
 type Media struct {
