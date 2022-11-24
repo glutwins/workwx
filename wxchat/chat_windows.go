@@ -1,12 +1,12 @@
-//go:build linux
+//go:build windows
 
 package wxchat
 
 /*
 #cgo CFLAGS: -I./
-#cgo LDFLAGS: -Llib/linux -lWeWorkFinanceSdk_C
+#cgo LDFLAGS: -Llib/windows -lWeWorkFinanceSdk_C
 #include <stdlib.h>
-#include "lib/linux/WeWorkFinanceSdk_C.h"
+#include "lib/windows/WeWorkFinanceSdk_C.h"
 */
 import "C"
 import (
@@ -106,7 +106,7 @@ func (sdk *WeWorkFinanceSdk) GetMediaData(sdkFileId string, writer io.Writer) er
 	}()
 	var mediaData C.MediaData_t
 	for isFinish == 0 {
-		if errCode := int(C.GetMediaData(sdk.sdk, indexbuf, cSdkFileid, sdk.proxy, sdk.auth, sdk.timeout, &mediaData)); errCode != 0 {
+		if errCode := int(C.GetMediaData(sdk.sdk, indexbuf, cSdkFileid, sdk.proxy, sdk.auth, sdk.timeout, &mediaData)); err != nil {
 			return NewSdkError(errCode)
 		}
 

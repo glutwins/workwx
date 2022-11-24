@@ -2,8 +2,6 @@ package wxchat
 
 import (
 	"fmt"
-
-	"gitlab-ce.k8s.tools.vchangyi.com/common/go-toolbox/json"
 )
 
 // CodeMsg 错误代码定义
@@ -130,63 +128,6 @@ type PlainMsg struct {
 	MeetingVoiceCall MeetingVoiceCall `json:"meeting_voice_call" desc:"音频存档消息"`
 	Voiceid          string           `json:"voiceid" desc:"是个坑! 只有meeting_voice_call类型存在 音频id"`
 	VoipDocShare     VoipDocShare     `json:"voip_doc_share" desc:"音频共享文档消息"`
-}
-
-// Content 获取消息体对应类型的内容json
-func (msg *PlainMsg) Content() string {
-	switch msg.Msgtype {
-	case MsgTypeText:
-		return json.MarshalToString(msg.Text)
-	case MsgTypeImage:
-		return json.MarshalToString(msg.Image)
-	case MsgTypeRevoke:
-		return json.MarshalToString(msg.Revoke)
-	case MsgTypeAgree:
-		return json.MarshalToString(msg.Agree)
-	case MsgTypeVoice:
-		return json.MarshalToString(msg.Voice)
-	case MsgTypeVideo:
-		return json.MarshalToString(msg.Video)
-	case MsgTypeCard:
-		return json.MarshalToString(msg.Card)
-	case MsgTypeLocation:
-		return json.MarshalToString(msg.Location)
-	case MsgTypeEmotion:
-		return json.MarshalToString(msg.Emotion)
-	case MsgTypeFile:
-		return json.MarshalToString(msg.File)
-	case MsgTypeLink:
-		return json.MarshalToString(msg.Link)
-	case MsgTypeWeapp:
-		return json.MarshalToString(msg.Weapp)
-	case MsgTypeChatrecord:
-		return json.MarshalToString(msg.Chatrecord)
-	case MsgTypeTodo:
-		return json.MarshalToString(msg.Todo)
-	case MsgTypeVote:
-		return json.MarshalToString(msg.Vote)
-	case MsgTypeCollect:
-		return json.MarshalToString(msg.Collect)
-	case MsgTypeRedpacket:
-		return json.MarshalToString(msg.Redpacket)
-	case MsgTypeMeeting:
-		return json.MarshalToString(msg.Meeting)
-	case MsgTypeDocmsg:
-		return json.MarshalToString(msg.Docmsg)
-	case MsgTypeMarkdown:
-		return json.MarshalToString(msg.Markdown)
-	case MsgTypeInfo:
-		return json.MarshalToString(msg.News)
-	case MsgTypeCalendar:
-		return json.MarshalToString(msg.Calendar)
-	case MsgTypeMixed:
-		return json.MarshalToString(msg.Mixed)
-	case MsgTypeMeetingVoiceCall:
-		return json.MarshalToString(msg.MeetingVoiceCall)
-	case MsgTypeVoipDocShare:
-		return json.MarshalToString(msg.VoipDocShare)
-	}
-	return "{}"
 }
 
 // Text 文本消息
@@ -425,28 +366,4 @@ type VoipDocShare struct {
 	Md5sum    string `json:"md5sum" desc:"共享文件的md5值"`
 	Filesize  int64  `json:"filesize" desc:"共享文件的大小"`
 	Sdkfileid string `json:"sdkfileid" desc:"共享文件的sdkfile，通过此字段进行媒体数据下载"`
-}
-
-// ChatMsgRequest 聊天消息获取请求
-type ChatMsgRequest struct {
-	Seq     int64  `json:"seq"`
-	Limit   uint   `json:"limit"`
-	Proxy   string `json:"proxy"`
-	Auth    string `json:"auth"`
-	Timeout int    `json:"timeout"`
-
-	CorpID      string `json:"corp_id"`
-	Secret      string `json:"secret"`
-	PrivateKeys map[int]string
-}
-
-// MediaDataRequest 媒体数据获取请求
-type MediaDataRequest struct {
-	SdkFileid string `json:"sdk_fileid"`
-	Proxy     string `json:"proxy"`
-	Auth      string `json:"auth"`
-	Timeout   int    `json:"timeout"`
-
-	CorpID string `json:"corp_id"`
-	Secret string `json:"secret"`
 }
