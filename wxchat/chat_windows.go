@@ -3,7 +3,7 @@
 package wxchat
 
 /*
-#cgo CFLAGS: -I./
+#cgo CFLAGS: -x c++ -fpermissive -I./
 #cgo LDFLAGS: -Llib/windows -lWeWorkFinanceSdk_C
 #include <stdlib.h>
 #include "lib/windows/WeWorkFinanceSdk_C.h"
@@ -18,7 +18,9 @@ import (
 	"encoding/pem"
 	"io"
 	"unsafe"
-) // 注意这个地方与上面注释的地方不能有空行，并且不能使用括号如import ("C" "fmt")
+)
+// 注意这个地方与上面注释的地方不能有空行，并且不能使用括号如import ("C" "fmt")
+// 需要安装g++，windows可用https://github.com/skeeto/w64devkit/releases
 
 type WeWorkFinanceSdk struct {
 	sdk     *C.WeWorkFinanceSdk_t
@@ -106,7 +108,7 @@ func (sdk *WeWorkFinanceSdk) GetMediaData(sdkFileId string, writer io.Writer) er
 	}()
 	var mediaData C.MediaData_t
 	for isFinish == 0 {
-		if errCode := int(C.GetMediaData(sdk.sdk, indexbuf, cSdkFileid, sdk.proxy, sdk.auth, sdk.timeout, &mediaData)); err != nil {
+		if errCode := int(C.GetMediaData(sdk.sdk, indexbuf, cSdkFileid, sdk.proxy, sdk.auth, sdk.timeout, &mediaData)); errCode != 0 {
 			return NewSdkError(errCode)
 		}
 
