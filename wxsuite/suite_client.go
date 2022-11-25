@@ -1,6 +1,8 @@
 package wxsuite
 
 import (
+	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"net/url"
 
@@ -87,6 +89,15 @@ type CorpDetail struct {
 	CorpScale         string `json:"corp_scale"`           // 企业规模。当企业未设置该属性时，值为空
 	CorpIndustry      string `json:"corp_industry"`        // 企业所属行业。当企业未设置该属性时，值为空
 	CorpSubIndustry   string `json:"corp_sub_industry"`    // 企业所属子行业。当企业未设置该属性时，值为空
+}
+
+func (c CorpDetail) Value() (driver.Value, error) {
+	b, err := json.Marshal(c)
+	return string(b), err
+}
+
+func (c *CorpDetail) Scan(src interface{}) error {
+	return json.Unmarshal(src.([]byte), c)
 }
 
 type SharedFrom struct {
