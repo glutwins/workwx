@@ -1,6 +1,7 @@
 package wxchat
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -128,6 +129,87 @@ type PlainMsg struct {
 	MeetingVoiceCall MeetingVoiceCall `json:"meeting_voice_call" desc:"音频存档消息"`
 	Voiceid          string           `json:"voiceid" desc:"是个坑! 只有meeting_voice_call类型存在 音频id"`
 	VoipDocShare     VoipDocShare     `json:"voip_doc_share" desc:"音频共享文档消息"`
+}
+
+// Content 获取消息体对应类型的内容json
+func (msg *PlainMsg) Content() string {
+	var val interface{} = make(map[string]interface{})
+	switch msg.Msgtype {
+	case MsgTypeText:
+		val = &msg.Text
+	case MsgTypeImage:
+		val = &msg.Image
+	case MsgTypeRevoke:
+		val = &msg.Revoke
+	case MsgTypeAgree:
+		val = &msg.Agree
+	case MsgTypeVoice:
+		val = &msg.Voice
+	case MsgTypeVideo:
+		val = &msg.Video
+	case MsgTypeCard:
+		val = &msg.Card
+	case MsgTypeLocation:
+		val = &msg.Location
+	case MsgTypeEmotion:
+		val = &msg.Emotion
+	case MsgTypeFile:
+		val = &msg.File
+	case MsgTypeLink:
+		val = &msg.Link
+	case MsgTypeWeapp:
+		val = &msg.Weapp
+	case MsgTypeChatrecord:
+		val = &msg.Chatrecord
+	case MsgTypeTodo:
+		val = &msg.Todo
+	case MsgTypeVote:
+		val = &msg.Vote
+	case MsgTypeCollect:
+		val = &msg.Collect
+	case MsgTypeRedpacket:
+		val = &msg.Redpacket
+	case MsgTypeMeeting:
+		val = &msg.Meeting
+	case MsgTypeDocmsg:
+		val = &msg.Docmsg
+	case MsgTypeMarkdown:
+		val = &msg.Markdown
+	case MsgTypeInfo:
+		val = &msg.News
+	case MsgTypeCalendar:
+		val = &msg.Calendar
+	case MsgTypeMixed:
+		val = &msg.Mixed
+	case MsgTypeMeetingVoiceCall:
+		msg.MeetingVoiceCall.Voiceid = msg.Voiceid
+		val = &msg.MeetingVoiceCall
+	case MsgTypeVoipDocShare:
+		val = &msg.VoipDocShare
+	}
+	b, _ := json.Marshal(val)
+	return string(b)
+}
+
+// SdkFileId 获取消息附件
+func (msg *PlainMsg) SdkFileId() string {
+	switch msg.Msgtype {
+	case MsgTypeImage:
+		return msg.Image.Sdkfileid
+	case MsgTypeVoice:
+		return msg.Voice.Sdkfileid
+	case MsgTypeVideo:
+		return msg.Video.Sdkfileid
+	case MsgTypeEmotion:
+		return msg.Emotion.Sdkfileid
+	case MsgTypeFile:
+		return msg.File.Sdkfileid
+	case MsgTypeMeetingVoiceCall:
+		return msg.MeetingVoiceCall.Sdkfileid
+	case MsgTypeVoipDocShare:
+		return msg.VoipDocShare.Sdkfileid
+	}
+	return ""
 }
 
 // Text 文本消息
