@@ -2,6 +2,8 @@
 
 package wxchat
 
+import "io"
+
 type WeWorkFinanceSdk struct {
 }
 
