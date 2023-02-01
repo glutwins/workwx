@@ -8,16 +8,44 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
+	"sync"
 )
 
 const wxBaseURL = "https://qyapi.weixin.qq.com/cgi-bin"
 
 type TokenHandler func() (string, error)
 
+var clientStore sync.Map
+
 type WorkClient struct {
 	GetAccessToken TokenHandler
 	Context        context.Context
 	Logger         ClientLogger
+	client         *http.Client
+}
+
+func (wx WorkClient) GetHttpClient() *http.Client {
+	if wx.client != nil {
+		return wx.client
+	}
+	return http.DefaultClient
+}
+
+func (wx *WorkClient) SetProxy(proxy string) {
+	if v, ok := clientStore.Load(proxy); ok {
+		wx.client = v.(*http.Client)
+	} else {
+		wx.client = &http.Client{
+			Transport: &http.Transport{
+				Proxy: func(r *http.Request) (*url.URL, error) {
+					return url.Parse(proxy)
+				},
+			},
+		}
+		clientStore.Store(proxy, wx.client)
+	}
+
 }
 
 func (wx *WorkClient) context() context.Context {
@@ -34,8 +62,9 @@ func (wx *WorkClient) GetJSON(api string, resp WorkWxResp) error {
 			wx.Logger.Println(wx.context(), wxBaseURL+api, nil, resp, err)
 		}
 	}()
+
 	var r *http.Response
-	r, err = http.Get(wxBaseURL + api)
+	r, err = wx.GetHttpClient().Get(wxBaseURL + api)
 	if err != nil {
 		return err
 	}
@@ -78,7 +107,7 @@ func (wx *WorkClient) PostJSON(api string, req interface{}, resp WorkWxResp) err
 	}
 
 	var r *http.Response
-	if r, err = http.Post(wxBaseURL+api, "application/json", bytes.NewBuffer(b)); err != nil {
+	if r, err = wx.GetHttpClient().Post(wxBaseURL+api, "application/json", bytes.NewBuffer(b)); err != nil {
 		return err
 	}
 
@@ -110,7 +139,7 @@ func (wx *WorkClient) PostMedia(api string, media *MediaToUpload, resp WorkWxRes
 
 	mv.Close()
 
-	r, err := http.Post(wxBaseURL+api, mv.FormDataContentType(), buf)
+	r, err := wx.GetHttpClient().Post(wxBaseURL+api, mv.FormDataContentType(), buf)
 	if err != nil {
 		return err
 	}
