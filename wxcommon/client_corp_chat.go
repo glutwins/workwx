@@ -31,3 +31,39 @@ func (scc *SuiteCorpClient) ExternalContactOpenGIdToChatId(openGId string) (*Ext
 
 	return resp, nil
 }
+
+func (scc *SuiteCorpClient) ExternalContactGroupChatAddJoinWay(req *ExternalContactGroupChatAddJoinWayReq) (*ExternalContactGroupChatAddJoinWayResp, error) {
+	resp := &ExternalContactGroupChatAddJoinWayResp{}
+	if err := scc.PostRespWithToken("/externalcontact/groupchat/add_join_way?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (scc *SuiteCorpClient) ExternalContactGroupChatGetJoinWay(req *ExternalContactGroupChatGetJoinWayReq) (*ExternalContactGroupChatGetJoinWayResp, error) {
+	resp := &ExternalContactGroupChatGetJoinWayResp{}
+	if err := scc.PostRespWithToken("/externalcontact/groupchat/get_join_way?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (scc *SuiteCorpClient) ExternalContactGroupChatUpdateJoinWay(req *ExternalContactGroupChatUpdateJoinWayReq) (*CommonResp, error) {
+	resp := &CommonResp{}
+	if err := scc.PostRespWithToken("/externalcontact/groupchat/update_join_way?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (scc *SuiteCorpClient) ExternalContactGroupChatDelJoinWay(req *ExternalContactGroupChatDelJoinWayReq) (*CommonResp, error) {
+	resp := &CommonResp{}
+	if err := scc.PostRespWithToken("/externalcontact/groupchat/del_join_way?access_token=%s", req, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
