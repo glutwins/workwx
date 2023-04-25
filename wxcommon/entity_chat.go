@@ -56,3 +56,54 @@ type ExternalContactOpenGIdToChatIdResp struct {
 	CommonResp
 	ChatId string `json:"chat_id"`
 }
+
+type ExternalContactGroupChatAddJoinWayReq struct {
+	Scene          int      `json:"scene"`
+	Remark         string   `json:"remark"`
+	AutoCreateRoom string   `json:"auto_create_room"`
+	RoomBaseName   string   `json:"room_base_name"`
+	RoomBaseID     int      `json:"room_base_id"`
+	ChatIDList     []string `json:"chat_id_list"`
+	State          string   `json:"state"`
+}
+
+type ExternalContactGroupChatAddJoinWayResp struct {
+	CommonResp
+	ConfigID string `json:"config_id"`
+}
+
+type ExternalContactGroupChatGetJoinWayReq struct {
+	ConfigID string `json:"config_id"`
+}
+
+type ExternalContactGroupChatGetJoinWayResp struct {
+	CommonResp
+	JoinWay JoinWayInfo `json:"join_way"`
+}
+
+type JoinWayInfo struct {
+	ConfigID       string   `json:"config_id"`
+	Scene          int      `json:"scene"`
+	Remark         string   `json:"remark"`
+	AutoCreateRoom int      `json:"auto_create_room"`
+	RoomBaseName   string   `json:"room_base_name"`
+	RoomBaseID     int      `json:"room_base_id"`
+	ChatIDList     []string `json:"chat_id_list"`
+	QrCode         string   `json:"qr_code"`
+	State          string   `json:"state"`
+}
+
+type ExternalContactGroupChatUpdateJoinWayReq struct {
+	ConfigID       string   `json:"config_id"`
+	Scene          int      `json:"scene"`
+	Remark         string   `json:"remark"`
+	AutoCreateRoom int      `json:"auto_create_room"`
+	RoomBaseName   string   `json:"room_base_name"`
+	RoomBaseID     int      `json:"room_base_id"`
+	ChatIDList     []string `json:"chat_id_list"`
+	State          string   `json:"state"`
+}
+
+type ExternalContactGroupChatDelJoinWayReq struct {
+	ConfigID string `json:"config_id"`
+}
