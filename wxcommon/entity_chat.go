@@ -13,6 +13,7 @@ type GroupChatMember struct {
 	Invitor       GroupChatMemberInvitor `json:"invitor"`
 	GroupNickName string                 `json:"group_nickname"`
 	Name          string                 `json:"name"`
+	State         string                 `json:"state"`
 }
 
 type GroupChat struct {
