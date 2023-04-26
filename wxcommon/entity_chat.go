@@ -60,7 +60,7 @@ type ExternalContactOpenGIdToChatIdResp struct {
 type ExternalContactGroupChatAddJoinWayReq struct {
 	Scene          int      `json:"scene"`
 	Remark         string   `json:"remark"`
-	AutoCreateRoom string   `json:"auto_create_room"`
+	AutoCreateRoom int      `json:"auto_create_room"`
 	RoomBaseName   string   `json:"room_base_name"`
 	RoomBaseID     int      `json:"room_base_id"`
 	ChatIDList     []string `json:"chat_id_list"`
