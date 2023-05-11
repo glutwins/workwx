@@ -199,7 +199,7 @@ type ExternalContactAddCorpTagResp struct {
 }
 
 type ExternalContactEditCorpTagReq struct {
-	Id    string `json:"id,omitempty"`
+	Id    string `json:"id"`
 	Name  string `json:"name,omitempty"`
 	Order int    `json:"order,omitempty"`
 }
