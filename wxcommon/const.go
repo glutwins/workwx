@@ -17,3 +17,13 @@ const (
 	ChangeContactDeleteParty string = "delete_party"
 	ChangeContactUpdateTag   string = "update_tag"
 )
+
+type KfServiceState int //客服会话状态
+
+const (
+	KfServiceStateUnSettled            KfServiceState = 0 //未处理
+	KfServiceStateSettledByAI          KfServiceState = 1 //由智能助手接待
+	KfServiceStateStaged               KfServiceState = 2 //待接入池排队中
+	KfServiceStateSettledByServiceUser KfServiceState = 3 //由人工接待
+	KfServiceStatePreStart             KfServiceState = 4 //已结束/未开始
+)
