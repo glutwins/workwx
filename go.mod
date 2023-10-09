@@ -1,4 +1,4 @@
-module github.com/glutwins/workwx
+module github.com/inclee/workwx
 
 go 1.18
 
