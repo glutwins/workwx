@@ -12,7 +12,13 @@ import (
 	"github.com/glutwins/workwx/wxcommon"
 )
 
-type SuiteEvent struct {
+const (
+	EventSubscribe   = "subscribe"       //关注
+	EventUnSubscribe = "unsubscribe"     //取消关注
+	EventKf          = "kf_msg_or_event" //客服消息事件
+)
+
+type SuiteEventBase struct {
 	ToUserName   string
 	FromUserName string
 	CreateTime   int64
@@ -22,18 +28,32 @@ type SuiteEvent struct {
 	AgentID      int
 }
 
+type SuiteKfEvent struct {
+	SuiteEventBase
+	Token    string
+	OpenKfId string
+}
+
 type SuiteMessageHandler interface {
-	OnCallbackEvent(*wxcommon.XmlRxEnvelope, *SuiteEvent)
+	OnCallbackEvent(*wxcommon.XmlRxEnvelope, *SuiteEventBase)
+	OnCallbackKfEvent(*wxcommon.XmlRxEnvelope, *SuiteKfEvent)
 }
 
 type DummySuiteMessageHandler struct {
 	Logger *log.Logger
 }
 
-func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteEvent) {
+func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteEventBase) {
 	if h.Logger != nil {
 		h.Logger.Printf("%d To[%s][%d] From[%s]: msg=%s event=%s (%s)\n", ev.CreateTime, ev.ToUserName, ev.AgentID, ev.FromUserName, ev.MsgType, ev.Event, d.Encrypt)
 	}
+}
+func (h *DummySuiteMessageHandler) OnCallbackKfEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteEventBase) {
+}
+
+func decode[T any](msg []byte, t *T) *T {
+	xml.NewDecoder(bytes.NewBuffer(msg)).Decode(t)
+	return t
 }
 
 func NewMessageHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h SuiteMessageHandler) gin.HandlerFunc {
@@ -56,12 +76,17 @@ func NewMessageHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxE
 			return
 		}
 
-		ev := &SuiteEvent{}
+		ev := &SuiteEventBase{}
 		if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(ev); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		h.OnCallbackEvent(&req, ev)
+		switch ev.Event {
+		case EventKf:
+			h.OnCallbackKfEvent(&req, decode[SuiteKfEvent](payload.Msg, &SuiteKfEvent{}))
+		default:
+			h.OnCallbackEvent(&req, ev)
+		}
 
 		ctx.String(http.StatusOK, "success")
 	}
