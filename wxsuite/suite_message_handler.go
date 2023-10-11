@@ -48,7 +48,7 @@ func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev
 		h.Logger.Printf("%d To[%s][%d] From[%s]: msg=%s event=%s (%s)\n", ev.CreateTime, ev.ToUserName, ev.AgentID, ev.FromUserName, ev.MsgType, ev.Event, d.Encrypt)
 	}
 }
-func (h *DummySuiteMessageHandler) OnCallbackKfEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteEventBase) {
+func (h *DummySuiteMessageHandler) OnCallbackKfEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteKfEvent) {
 }
 
 func decode[T any](msg []byte, t *T) *T {
