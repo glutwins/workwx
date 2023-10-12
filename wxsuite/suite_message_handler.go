@@ -27,13 +27,15 @@ type DummySuiteMessageHandler struct {
 	Logger *log.Logger
 }
 
-func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteEventBase) {
+func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteEventBase) error {
 	if h.Logger != nil {
 		h.Logger.Printf("%d To[%s][%d] From[%s]: msg=%s event=%s (%s)\n", ev.CreateTime, ev.ToUserName, ev.AgentID, ev.FromUserName, ev.MsgType, ev.Event, d.Encrypt)
 	}
+	return nil
 }
 
-func (h *DummySuiteMessageHandler) OnCallbackKfMsgOrEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteKfEvent) {
+func (h *DummySuiteMessageHandler) OnKfMsgOrEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteKfEvent) error {
+	return nil
 }
 
 func NewMessageHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h SuiteMessageHandler) gin.HandlerFunc {
