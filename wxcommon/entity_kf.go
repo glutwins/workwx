@@ -4,6 +4,22 @@ import (
 	"encoding/json"
 )
 
+type SuiteEventBase struct {
+	ToUserName   string
+	FromUserName string
+	CreateTime   int64
+	MsgType      string
+	Event        string
+	EventKey     string
+	AgentID      int
+}
+
+type SuiteKfEvent struct {
+	SuiteEventBase
+	Token    string
+	OpenKfId string
+}
+
 type SyncKfMsgReq struct {
 	Cursor   string `json:"cursor"`
 	Token    string `json:"token"`
