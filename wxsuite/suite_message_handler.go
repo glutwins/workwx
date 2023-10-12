@@ -33,6 +33,9 @@ func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev
 	}
 }
 
+func (h *DummySuiteMessageHandler) OnCallbackKfMsgOrEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteKfEvent) {
+}
+
 func NewMessageHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h SuiteMessageHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req wxcommon.XmlRxEnvelope

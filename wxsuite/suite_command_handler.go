@@ -65,8 +65,6 @@ func (h *DummySuiteCallbackHandler) OnCallbackChangeExternalChat(*wxcommon.XmlRx
 }
 func (h *DummySuiteCallbackHandler) OnCallbackChangeExternalTag(*wxcommon.XmlRxEnvelope, *SuiteCallbackBase, *wxcommon.XmlCallbackExternalTag) {
 }
-func (h *DummySuiteCallbackHandler) OnCallbackKfMsgOrEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteKfEvent) {
-}
 
 const (
 	SuiteCallbackTypeSuiteTicket        string = "suite_ticket"
