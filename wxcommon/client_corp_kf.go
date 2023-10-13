@@ -43,9 +43,7 @@ func (scc *SuiteCorpClient) KfSendMsg(msg KfMsgBody) (*KfSendMsgResp, error) {
 
 func (scc *SuiteCorpClient) KfServiceList(openKfId string) (*KfServicerListResp, error) {
 	resp := &KfServicerListResp{}
-	if err := scc.PostRespWithToken("/kf/servicer/list?access_token=%s", map[string]interface{}{
-		"open_kfid": openKfId,
-	}, resp); err != nil {
+	if err := scc.GetRespWithToken("/kf/servicer/list?access_token=%s&open_kfid=%s", resp, openKfId); err != nil {
 		return nil, err
 	}
 	return resp, nil
