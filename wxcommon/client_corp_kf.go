@@ -46,7 +46,7 @@ func (scc *SuiteCorpClient) KfSendMsgOnEvent(msg KfMsgBody) (*KfSendMsgResp, err
 	}
 	return resp, nil
 }
-func (scc *SuiteCorpClient) KfSendMsg(msg KfMsgBody) (*KfSendMsgResp, error) {
+func (scc *SuiteCorpClient) KfSendMsg(msg KfSendMsgRequest) (*KfSendMsgResp, error) {
 	resp := &KfSendMsgResp{}
 	if err := scc.PostRespWithToken("/kf/send_msg?access_token=%s", msg, resp); err != nil {
 		return nil, err
