@@ -15,7 +15,7 @@ func (scc *SuiteCorpClient) SyncKfMsg(token string, openKfId string, cursor stri
 
 func (scc *SuiteCorpClient) GetKfServiceState(openKfId string, externalUserId string) (*GetServiceStateResp, error) {
 	resp := &GetServiceStateResp{}
-	if err := scc.PostRespWithToken("kf/service_state/get?access_token=%s", map[string]interface{}{
+	if err := scc.PostRespWithToken("/kf/service_state/get?access_token=%s", map[string]interface{}{
 		"open_kfid":       openKfId,
 		"external_userid": externalUserId,
 	}, resp); err != nil {
