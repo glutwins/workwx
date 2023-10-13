@@ -15,7 +15,7 @@ func (scc *SuiteCorpClient) SyncKfMsg(token string, openKfId string, cursor stri
 
 func (scc *SuiteCorpClient) TransServiceState(openKfId string, externalUserId string, serviceUserId string, toState KfServiceState) (*TransServiceStateResp, error) {
 	resp := &TransServiceStateResp{}
-	if err := scc.PostRespWithToken("/kf/sync_msg?access_token=%s", TransServiceStateReq{
+	if err := scc.PostRespWithToken("/kf/service_state/trans?access_token=%s", TransServiceStateReq{
 		OpenKfId:       openKfId,
 		ExternalUserId: externalUserId,
 		ServiceUserId:  serviceUserId,
@@ -28,14 +28,14 @@ func (scc *SuiteCorpClient) TransServiceState(openKfId string, externalUserId st
 
 func (scc *SuiteCorpClient) KfSendMsgOnEvent(msg KfMsgBody) (*KfSendMsgResp, error) {
 	resp := &KfSendMsgResp{}
-	if err := scc.PostRespWithToken("kf/send_msg_on_event?access_token==%s", msg, resp); err != nil {
+	if err := scc.PostRespWithToken("/kf/send_msg_on_event?access_token=%s", msg, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
 }
 func (scc *SuiteCorpClient) KfSendMsg(msg KfMsgBody) (*KfSendMsgResp, error) {
 	resp := &KfSendMsgResp{}
-	if err := scc.PostRespWithToken("/kf/send_msg?access_token==%s", msg, resp); err != nil {
+	if err := scc.PostRespWithToken("/kf/send_msg?access_token=%s", msg, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -43,7 +43,7 @@ func (scc *SuiteCorpClient) KfSendMsg(msg KfMsgBody) (*KfSendMsgResp, error) {
 
 func (scc *SuiteCorpClient) KfServiceList(openKfId string) (*KfServicerListResp, error) {
 	resp := &KfServicerListResp{}
-	if err := scc.PostRespWithToken("/kf/servicer/list?access_token==%s", map[string]interface{}{
+	if err := scc.PostRespWithToken("/kf/servicer/list?access_token=%s", map[string]interface{}{
 		"open_kfid": openKfId,
 	}, resp); err != nil {
 		return nil, err
