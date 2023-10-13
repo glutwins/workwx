@@ -13,13 +13,26 @@ func (scc *SuiteCorpClient) SyncKfMsg(token string, openKfId string, cursor stri
 	return resp, nil
 }
 
+func (scc *SuiteCorpClient) GetKfServiceState(openKfId string, externalUserId string) (*TransServiceStateResp, error) {
+	resp := &TransServiceStateResp{}
+	if err := scc.PostRespWithToken("kf/service_state/get?access_token=%s", map[string]interface{}{
+		"open_kfid":       openKfId,
+		"external_userid": externalUserId,
+	}, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (scc *SuiteCorpClient) TransServiceState(openKfId string, externalUserId string, serviceUserId string, toState KfServiceState) (*TransServiceStateResp, error) {
 	resp := &TransServiceStateResp{}
 	if err := scc.PostRespWithToken("/kf/service_state/trans?access_token=%s", TransServiceStateReq{
 		OpenKfId:       openKfId,
 		ExternalUserId: externalUserId,
-		ServiceUserId:  serviceUserId,
-		ServiceState:   toState,
+		ServiceState: ServiceState{
+			ServiceUserId: serviceUserId,
+			ServiceState:  toState,
+		},
 	}, resp); err != nil {
 		return nil, err
 	}

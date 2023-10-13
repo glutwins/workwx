@@ -47,15 +47,23 @@ type KfMsg struct {
 }
 
 type TransServiceStateReq struct {
-	OpenKfId       string         `json:"open_kfid"`
-	ExternalUserId string         `json:"external_userid"`
-	ServiceState   KfServiceState `json:"service_state"`
-	ServiceUserId  string         `json:"service_userid"`
+	OpenKfId       string `json:"open_kfid"`
+	ExternalUserId string `json:"external_userid"`
+	ServiceState
 }
 
 type TransServiceStateResp struct {
 	CommonResp
 	MsgCode string `json:"msg_code"`
+}
+
+type GetServiceStateResp struct {
+	CommonResp
+	ServiceState
+}
+type ServiceState struct {
+	ServiceState  KfServiceState `json:"service_state"`
+	ServiceUserId string         `json:"service_userid"`
 }
 
 type KfSendMsgRequest struct {
