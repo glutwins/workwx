@@ -182,7 +182,7 @@ type KfEntetrSessionEvent struct {
 	KfEventBase
 	OpenKfId       string `json:"open_kfid"`
 	ExternalUserId string `json:"external_userid"`
-	Scene          int    `json:"scene"`
+	Scene          string `json:"scene"`
 	SceneParam     string `json:"scene_param"`
 	WelcomeCode    string `json:"welcome_code"`
 	WechatChannels struct {
@@ -195,7 +195,7 @@ type KfSessionStatusEvent struct {
 	KfEventBase
 	OpenKfId          string `json:"open_kfid"`
 	ExternalUserId    string `json:"external_userid"`
-	ChanteType        int    `json:"change_type"`
+	ChangeType        int    `json:"change_type"`
 	OldServicerUserId string `json:"old_servicer_userid"`
 	NewServicerUserId string `json:"new_servicer_userid"`
 	MsgCode           string `json:"msg_code"`
