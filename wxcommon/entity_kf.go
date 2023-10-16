@@ -200,3 +200,14 @@ type KfSessionStatusEvent struct {
 	NewServicerUserId string `json:"new_servicer_userid"`
 	MsgCode           string `json:"msg_code"`
 }
+
+type KfEditServicerResult struct {
+	UserId       string `json:"userid"`
+	DepartmentId string `json:"department_id"`
+	ErrCode      int    `json:"errcode"`
+	ErrMsg       string `json:"errmsg"`
+}
+type KfEditServicerResp struct {
+	CommonResp
+	List []KfEditServicerResult `json:"servicer_list"`
+}

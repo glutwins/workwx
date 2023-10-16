@@ -61,3 +61,26 @@ func (scc *SuiteCorpClient) KfServiceList(openKfId string) (*KfServicerListResp,
 	}
 	return resp, nil
 }
+func (scc *SuiteCorpClient) KfServiceAdd(openKfId string, serviers []string, departments []string) (*KfEditServicerResp, error) {
+	resp := &KfEditServicerResp{}
+	if err := scc.PostRespWithToken("/kf/servicer/add?access_token=%s", map[string]interface{}{
+		"open_kfid":          openKfId,
+		"userid_list":        serviers,
+		"department_id_list": departments,
+	}, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (scc *SuiteCorpClient) KfServiceDel(openKfId string, serviers []string, departments []string) (*KfEditServicerResp, error) {
+	resp := &KfEditServicerResp{}
+	if err := scc.PostRespWithToken("/kf/servicer/del?access_token=%s", map[string]interface{}{
+		"open_kfid":          openKfId,
+		"userid_list":        serviers,
+		"department_id_list": departments,
+	}, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
