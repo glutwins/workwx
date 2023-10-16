@@ -209,5 +209,5 @@ type KfEditServicerResult struct {
 }
 type KfEditServicerResp struct {
 	CommonResp
-	List []KfEditServicerResult `json:"servicer_list"`
+	List []KfEditServicerResult `json:"result_list"`
 }
