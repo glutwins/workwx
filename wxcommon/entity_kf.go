@@ -62,8 +62,8 @@ type GetServiceStateResp struct {
 	ServiceState
 }
 type ServiceState struct {
-	ServiceState  KfServiceState `json:"service_state"`
-	ServiceUserId string         `json:"service_userid"`
+	ServiceState   KfServiceState `json:"service_state"`
+	ServicerUserId string         `json:"servicer_userid"`
 }
 
 type KfSendMsgRequest struct {

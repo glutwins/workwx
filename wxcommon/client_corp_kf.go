@@ -30,8 +30,8 @@ func (scc *SuiteCorpClient) TransServiceState(openKfId string, externalUserId st
 		OpenKfId:       openKfId,
 		ExternalUserId: externalUserId,
 		ServiceState: ServiceState{
-			ServiceUserId: serviceUserId,
-			ServiceState:  toState,
+			ServicerUserId: serviceUserId,
+			ServiceState:   toState,
 		},
 	}, resp); err != nil {
 		return nil, err
