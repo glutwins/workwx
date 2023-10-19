@@ -14,6 +14,7 @@ import (
 )
 
 type SuiteCallbackHandler interface {
+	SuiteMessageHandler
 	OnCallbackSuiteTicket(*wxcommon.XmlRxEnvelope, *SuiteCallbackBase, string)
 	OnCallbackCreateAuth(*wxcommon.XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackAuth)
 	OnCallbackChangeAuth(*wxcommon.XmlRxEnvelope, *SuiteCallbackBase, *SuiteCallbackAuth)
@@ -32,6 +33,7 @@ type SuiteCallbackHandler interface {
 
 type DummySuiteCallbackHandler struct {
 	TokenCache store.TokenCache
+	DummySuiteMessageHandler
 }
 
 func (h *DummySuiteCallbackHandler) OnCallbackSuiteTicket(raw *wxcommon.XmlRxEnvelope, base *SuiteCallbackBase, ticket string) {
@@ -139,7 +141,6 @@ func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.Workwx
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-
 		base := &SuiteCallbackBase{}
 		base.SuiteId = data.SuiteId
 		base.InfoType = data.InfoType
@@ -199,6 +200,16 @@ func NewCallbackHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.Workwx
 				return
 			}
 			h.OnCallbackChangeExternalTag(&req, base, tag)
+		case SuiteCallbackTypeKfMsgOrEvent:
+			event := &wxcommon.SuiteEventBase{}
+			if err := xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(event); err != nil {
+				ctx.Status(http.StatusBadRequest)
+				return
+			}
+			if err := onEventsOrMessageCallback(xml.NewDecoder(bytes.NewBuffer(payload.Msg)), &req, event, h); err != nil {
+				ctx.Status(http.StatusInternalServerError)
+				return
+			}
 		default:
 			h.OnCallbackChangeContactUnkown(&req, data)
 		}

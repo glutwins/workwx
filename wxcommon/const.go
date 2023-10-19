@@ -27,3 +27,14 @@ const (
 	KfServiceStateSettledByServiceUser KfServiceState = 3 //由人工接待
 	KfServiceStatePreStart             KfServiceState = 4 //已结束/未开始
 )
+
+const (
+	KfMsgTypeText        = "text"        //文本消息
+	KfMsgTypeImage       = "image"       //图片消息
+	KfMsgTypeVoice       = "voice"       //语音消息
+	KfMsgTypeVideo       = "video"       //视频消息
+	KfMsgTypeFile        = "file"        //文件消息
+	KfMsgTypeLink        = "link"        //链接消息
+	KfMsgTypeMiniprogram = "miniprogram" //小程序卡片消息
+	KfMsgTypeMenu        = "msgmenu"     //菜单消息
+)

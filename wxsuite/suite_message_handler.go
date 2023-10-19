@@ -13,47 +13,29 @@ import (
 )
 
 const (
-	EventSubscribe   = "subscribe"       //关注
-	EventUnSubscribe = "unsubscribe"     //取消关注
-	EventKf          = "kf_msg_or_event" //客服消息事件
+	SuiteCallbackTypeEventSubscribe          = "subscribe"       //关注
+	SuiteCallbackTypeEventUnSubscribe        = "unsubscribe"     //取消关注
+	SuiteCallbackTypeKfMsgOrEvent     string = "kf_msg_or_event" //客服消息事件
 )
 
-type SuiteEventBase struct {
-	ToUserName   string
-	FromUserName string
-	CreateTime   int64
-	MsgType      string
-	Event        string
-	EventKey     string
-	AgentID      int
-}
-
-type SuiteKfEvent struct {
-	SuiteEventBase
-	Token    string
-	OpenKfId string
-}
-
 type SuiteMessageHandler interface {
-	OnCallbackEvent(*wxcommon.XmlRxEnvelope, *SuiteEventBase)
-	OnCallbackKfEvent(*wxcommon.XmlRxEnvelope, *SuiteKfEvent)
+	OnCallbackEvent(*wxcommon.XmlRxEnvelope, *wxcommon.SuiteEventBase) error
+	OnKfMsgOrEvent(*wxcommon.XmlRxEnvelope, *wxcommon.SuiteKfEvent) error
 }
 
 type DummySuiteMessageHandler struct {
 	Logger *log.Logger
 }
 
-func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteEventBase) {
+func (h *DummySuiteMessageHandler) OnCallbackEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteEventBase) error {
 	if h.Logger != nil {
 		h.Logger.Printf("%d To[%s][%d] From[%s]: msg=%s event=%s (%s)\n", ev.CreateTime, ev.ToUserName, ev.AgentID, ev.FromUserName, ev.MsgType, ev.Event, d.Encrypt)
 	}
-}
-func (h *DummySuiteMessageHandler) OnCallbackKfEvent(d *wxcommon.XmlRxEnvelope, ev *SuiteEventBase) {
+	return nil
 }
 
-func decode[T any](msg []byte, t *T) *T {
-	xml.NewDecoder(bytes.NewBuffer(msg)).Decode(t)
-	return t
+func (h *DummySuiteMessageHandler) OnKfMsgOrEvent(d *wxcommon.XmlRxEnvelope, ev *wxcommon.SuiteKfEvent) error {
+	return nil
 }
 
 func NewMessageHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxEncryptor, h SuiteMessageHandler) gin.HandlerFunc {
@@ -76,18 +58,29 @@ func NewMessageHandler(cfg *wxcommon.SuiteCallbackConfig, enc *encryptor.WorkwxE
 			return
 		}
 
-		ev := &SuiteEventBase{}
+		ev := &wxcommon.SuiteEventBase{}
 		if err = xml.NewDecoder(bytes.NewBuffer(payload.Msg)).Decode(ev); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		switch ev.Event {
-		case EventKf:
-			h.OnCallbackKfEvent(&req, decode[SuiteKfEvent](payload.Msg, &SuiteKfEvent{}))
-		default:
-			h.OnCallbackEvent(&req, ev)
+		if err = onEventsOrMessageCallback(xml.NewDecoder(bytes.NewBuffer(payload.Msg)), &req, ev, h); err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return
 		}
-
 		ctx.String(http.StatusOK, "success")
 	}
+}
+
+func onEventsOrMessageCallback(dec *xml.Decoder, req *wxcommon.XmlRxEnvelope, event *wxcommon.SuiteEventBase, h SuiteMessageHandler) (err error) {
+	switch event.Event {
+	case SuiteCallbackTypeKfMsgOrEvent:
+		kfEvent := &wxcommon.SuiteKfEvent{}
+		if err := dec.Decode(kfEvent); err != nil {
+			return err
+		}
+		err = h.OnKfMsgOrEvent(req, kfEvent)
+	default:
+		err = h.OnCallbackEvent(req, event)
+	}
+	return
 }
