@@ -8,7 +8,7 @@ type Department struct {
 	NameEn           string   `json:"name_en"`
 	DepartmentLeader []string `json:"department_leader"`
 	ParentId         int32    `json:"parentid"`
-	Order            int32    `json:"order"`
+	Order            int64    `json:"order"`
 }
 
 type DepartmentListResp struct {
