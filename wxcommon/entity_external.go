@@ -259,3 +259,30 @@ type BehaviorData struct {
 	NewApplyCnt         int64   `json:"new_apply_cnt"`
 	NewContactCnt       int64   `json:"new_contact_cnt"`
 }
+
+type ExternalContactStatisticGroupByDayReq struct {
+	DayBeginTime int64     `json:"day_begin_time"` // 起始日期的时间戳，填当天的0时0分0秒（否则系统自动处理为当天的0分0秒）。取值范围：昨天至前180天
+	DayEndTime   int64     `json:"day_end_time"`   // 结束日期的时间戳，填当天的0时0分0秒（否则系统自动处理为当天的0分0秒）。取值范围：昨天至前180天
+	OwnFilter    OwnFilter `json:"owner_filter"`   // 群主ID列表。最多100个
+}
+
+type ExternalContactStatisticGroupByDayResp struct {
+	CommonResp
+	Items []StatisticGroupByDayItem `json:"items"`
+}
+
+type StatisticGroupByDayItem struct {
+	StartTime int64                   `json:"stat_time"`
+	Data      StatisticGroupByDayData `json:"data"`
+}
+
+type StatisticGroupByDayData struct {
+	NewChatCnt            int `json:"new_chat_cnt"`
+	ChatTotal             int `json:"chat_total"`
+	ChatHasMsg            int `json:"chat_has_msg"`
+	NewMemberCnt          int `json:"new_member_cnt"`
+	MemberTotal           int `json:"member_total"`
+	MemberHasMsg          int `json:"member_has_msg"`
+	MsgTotal              int `json:"msg_total"`
+	MigrateTraineeChatCnt int `json:"migrate_trainee_chat_cnt"`
+}
