@@ -43,3 +43,23 @@ func (c *ProviderClient) GetProviderToken() (string, error) {
 	c.cache.SetProviderAccessToken(c.config.CorpId, resp.ProviderAccessToken, resp.ExpiresIn)
 	return resp.ProviderAccessToken, nil
 }
+
+type CustomizedAuthUrlResp struct {
+	wxcommon.CommonResp
+	QrcodeUrl string `json:"qrcode_url"`
+	ExpiresIn int    `json:"expires_in"`
+}
+
+func (c *ProviderClient) GetCustomizedAuthUrl(state string, templateIdList []string) (*CustomizedAuthUrlResp, error) {
+	accessToken, err := c.GetProviderToken()
+	if err != nil {
+		return nil, err
+	}
+
+	var resp CustomizedAuthUrlResp
+	if err := c.PostJSON("/service/get_customized_auth_url?provider_access_token="+accessToken, c.config, &resp); err != nil {
+		return nil, err
+	}
+
+	return &resp, resp.Err()
+}
