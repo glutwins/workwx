@@ -57,7 +57,10 @@ func (c *ProviderClient) GetCustomizedAuthUrl(state string, templateIdList []str
 	}
 
 	var resp CustomizedAuthUrlResp
-	if err := c.PostJSON("/service/get_customized_auth_url?provider_access_token="+accessToken, c.config, &resp); err != nil {
+	if err := c.PostJSON("/service/get_customized_auth_url?provider_access_token="+accessToken, map[string]interface{}{
+		"state":           state,
+		"templateid_list": templateIdList,
+	}, &resp); err != nil {
 		return nil, err
 	}
 
