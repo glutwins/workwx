@@ -84,3 +84,28 @@ func (scc *SuiteCorpClient) KfServiceDel(openKfId string, serviers []string, dep
 	}
 	return resp, nil
 }
+
+func (scc *SuiteCorpClient) KfGetCorpStatistic(openKfId string, startTime int64, endTime int64) (*KfGetCorpStatisticResp, error) {
+	resp := &KfGetCorpStatisticResp{}
+	if err := scc.PostRespWithToken("/kf/get_corp_statistic?access_token=%s", map[string]interface{}{
+		"open_kfid":  openKfId,
+		"start_time": startTime,
+		"end_time":   endTime,
+	}, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (scc *SuiteClient) KfGetServicerStatistic(openKfId string, servicer_userid string, startTime int64, endTime int64) (*KfGetServicerStatisticResp, error) {
+	resp := &KfGetServicerStatisticResp{}
+	if err := scc.PostRespWithToken("/kf/get_servicer_statistic?access_token=%s", map[string]interface{}{
+		"open_kfid":       openKfId,
+		"servicer_userid": servicer_userid,
+		"start_time":      startTime,
+		"end_time":        endTime,
+	}, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

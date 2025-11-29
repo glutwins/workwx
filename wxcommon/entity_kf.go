@@ -211,3 +211,49 @@ type KfEditServicerResp struct {
 	CommonResp
 	List []KfEditServicerResult `json:"result_list"`
 }
+
+type KfGetCorpStatisticResp struct {
+	CommonResp
+	Statistic []KfCorpStatisticItem `json:"statistic_list"`
+}
+
+type KfCorpStatisticItem struct {
+	StatTime  int64 `json:"stat_time"`
+	Statistic struct {
+		SessionCnt                int `json:"session_cnt"`
+		CustomerCnt               int `json:"customer_cnt"`
+		CustomerMsgCnt            int `json:"customer_msg_cnt"`
+		UpgradeServiceCustomerCnt int `json:"upgrade_service_customer_cnt"`
+		AiSessionReplyCnt         int `json:"ai_session_reply_cnt"`
+		AiTransferRate            int `json:"ai_transfer_rate"`
+		AiKnowledgeHitRate        int `json:"ai_knowledge_hit_rate"`
+		MsgRejectedCustomerCnt    int `json:"msg_rejected_customer_cnt"`
+	} `json:"statistic"`
+}
+
+type KfGetServicerStatisticResp struct {
+	CommonResp
+	Statistic []KfServicerStatisticItem `json:"statistic_list"`
+}
+
+type KfServicerStatisticItem struct {
+	StatTime  int64 `json:"stat_time"`
+	Statistic struct {
+		SessionCnt                         int `json:"session_cnt"`
+		CustomerCnt                        int `json:"customer_cnt"`
+		CustomerMsgCnt                     int `json:"customer_msg_cnt"`
+		ReplyRate                          int `json:"reply_rate"`
+		FirstReplyAverageSec               int `json:"first_reply_average_sec"`
+		SatisfactionInvestgateCnt          int `json:"satisfaction_investgate_cnt"`
+		SatisfactionParticipationRate      int `json:"satisfaction_participation_rate"`
+		SatisfiedRate                      int `json:"satisfied_rate"`
+		MiddlingRate                       int `json:"middling_rate"`
+		DissatisfiedRate                   int `json:"dissatisfied_rate"`
+		UpgradeServiceCustomerCnt          int `json:"upgrade_service_customer_cnt"`
+		UpgradeServiceMemberInviteCnt      int `json:"upgrade_service_member_invite_cnt"`
+		UpgradeServiceMemberCustomerCnt    int `json:"upgrade_service_member_customer_cnt"`
+		UpgradeServiceGroupchatInviteCnt   int `json:"upgrade_service_groupchat_invite_cnt"`
+		UpgradeServiceGroupchatCustomerCnt int `json:"upgrade_service_groupchat_customer_cnt"`
+		MsgRejectedCustomerCnt             int `json:"msg_rejected_customer_cnt"`
+	}
+}
